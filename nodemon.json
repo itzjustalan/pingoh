@@ -1,0 +1,10 @@
+{
+  "ext": "go",
+  "delay": 1,
+  "verbose": true,
+  "signal": "SIGTERM",
+  "ignore": [
+    "./frontend"
+  ],
+  "exec": "go run ./..."
+}
