@@ -2,6 +2,8 @@ package db
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type UserRole string
@@ -13,11 +15,13 @@ const (
 
 type User struct {
 	// ID        uint64
-	ID        int
-	Email     string
-	Role      UserRole
-	PwHash    string    `db:"pw_hash"`
-	CreatedAt time.Time `db:"created_at"`
+	ID        int       `json:"-"`
+	UID       string    `json:"uid"`
+	Email     string    `json:"email"`
+	PwHash    string    `json:"-" db:"pw_hash"`
+	Role      UserRole  `json:"role"`
+	Access    string    `json:"access"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 func CreateUsersTable() error {
@@ -27,9 +31,11 @@ func CreateUsersTable() error {
 	q := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		uid TEXT UNIQUE NOT NULL,
 		email TEXT UNIQUE NOT NULL,
 		pw_hash TEXT NOT NULL,
 		role TEXT CHECK( role IN ('admin','user') ) NOT NULL DEFAULT 'user',
+		access TEXT NOT NULL DEFAULT "[]",
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	) 
 	`
@@ -57,7 +63,7 @@ func potentialAdmin() (UserRole, error) {
 
 func CreateUser(u *User) (int64, error) {
 	q := `
-	INSERT INTO users (email, role, pw_hash) VALUES (?, ?, ?);
+	INSERT INTO users (uid, email, pw_hash, role, access) VALUES (?, ?, ?, ?, ?)
 	`
 	if u.Role == "" {
 		role, err := potentialAdmin()
@@ -66,7 +72,8 @@ func CreateUser(u *User) (int64, error) {
 		}
 		u.Role = role
 	}
-	res, err := DB.Exec(q, u.Email, u.Role, u.PwHash)
+	// jstr, err := json.Marshal([]string{})
+	res, err := DB.Exec(q, uuid.New().String(), u.Email, u.PwHash, u.Role, "[]")
 	if err != nil {
 		return 0, err
 	}
@@ -79,6 +86,15 @@ func FindUserByID(id int) (User, error) {
 	`
 	var u User
 	err := DB.Get(&u, q, id)
+	return u, err
+}
+
+func FindUserByUID(uid string) (User, error) {
+	q := `
+	SELECT * FROM users WHERE uid = ?
+	`
+	var u User
+	err := DB.Get(&u, q, uid)
 	return u, err
 }
 

@@ -20,9 +20,10 @@ type AuthenticatedUser struct {
 	services.JwtTokens
 }
 
-func Signup(creds *AuthCredentials) error {
+func Signup(creds *AuthCredentials) (AuthenticatedUser, error) {
+	var u AuthenticatedUser
 	if len(creds.Passw) > 50 {
-		return fiber.NewError(
+		return u, fiber.NewError(
 			fiber.ErrBadRequest.Code,
 			"password must be less than 50 characters!",
 		)
@@ -30,11 +31,23 @@ func Signup(creds *AuthCredentials) error {
 	hash, err := bcrypt.GenerateFromPassword(
 		[]byte(creds.Passw), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return u, err
 	}
-	u := db.User{Email: creds.Email, PwHash: string(hash)}
-	_, err = db.CreateUser(&u)
-	return err
+	_, err = db.CreateUser(&db.User{Email: creds.Email, PwHash: string(hash)})
+	if err != nil {
+		return u, err
+	}
+	user, err := db.FindUserByEmail(creds.Email)
+	if err != nil {
+		return u, err
+	}
+	tokens, err := services.NewJwtTokens(user.UID, string(user.Role), user.Access)
+	if err != nil {
+		return u, err
+	}
+	u.User = user
+	u.JwtTokens = tokens
+	return u, nil
 }
 
 func Signin(creds *AuthCredentials) (AuthenticatedUser, error) {
@@ -52,7 +65,7 @@ func Signin(creds *AuthCredentials) (AuthenticatedUser, error) {
 		return u, fiber.NewError(
 			fiber.ErrBadRequest.Code, "wrong password")
 	}
-	tokens, err := services.NewJwtTokens(user.ID, string(user.Role))
+	tokens, err := services.NewJwtTokens(user.UID, string(user.Role), user.Access)
 	if err != nil {
 		return u, err
 	}
@@ -71,7 +84,7 @@ func RefreshTokens(token string) (services.JwtTokens, error) {
 		return tokens, fiber.NewError(
 			fiber.ErrUnauthorized.Code, "token expired")
 	}
-	tokens, err = services.NewJwtTokens(claims.ID, claims.Role)
+	tokens, err = services.NewJwtTokens(claims.UID, claims.Role, claims.Access)
 	if err != nil {
 		return tokens, err
 	}

@@ -8,24 +8,26 @@ import (
 )
 
 type UserClaims struct {
-	ID   int    `json:"id"`
-	Role string `json:"role"`
+	UID    string `json:"uid"`
+	Role   string `json:"role"`
+	Access string `json:"access"`
 	jwt.RegisteredClaims
 }
 
 type JwtTokens struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 var issuer = "pingoh"
 var secret = "secret"
 
-func NewJwtTokens(id int, role string) (JwtTokens, error) {
+func NewJwtTokens(uid string, role string, access string) (JwtTokens, error) {
 	var tokens JwtTokens
 	accessToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		ID:   id,
-		Role: role,
+		UID:    uid,
+		Role:   role,
+		Access: access,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    issuer,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -37,8 +39,9 @@ func NewJwtTokens(id int, role string) (JwtTokens, error) {
 		return tokens, err
 	}
 	refreshToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		ID:   id,
-		Role: role,
+		UID:    uid,
+		Role:   role,
+		Access: access,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    issuer,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

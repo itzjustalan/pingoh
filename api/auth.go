@@ -14,7 +14,11 @@ func addAuthRoutes(api fiber.Router) {
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
-		return handlers.Signup(&b)
+		u, err := handlers.Signup(&b)
+		if err != nil {
+			return err
+		}
+		return c.JSON(u)
 	})
 
 	auth.Post("/signin", func(c *fiber.Ctx) error {

@@ -1,5 +1,8 @@
 <script lang="ts">
-    const apiUrl = (path: string) => `http://localhost:3000${path}`;
+	import { authNetwork } from "$lib/network/auth.network";
+	import { authedUser } from "$lib/stores/auth";
+
+    const apiUrl = (path: string) => `http://localhost:3000/api${path}`;
 
     const getVersion = async () => {
         const url = apiUrl('/h');
@@ -19,3 +22,6 @@
 {:catch err}
     {err}
 {/await}
+
+<button on:click={() => authedUser.clear()}>clear</button>
+<button on:click={() => authNetwork.refresh()}>refresh</button>

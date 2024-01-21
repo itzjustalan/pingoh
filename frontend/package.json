@@ -2,6 +2,7 @@
   "name": "pingoh",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -17,6 +18,7 @@
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/eslint": "8.56.0",
+    "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.56.0",
@@ -31,5 +33,9 @@
     "vite": "^5.0.3",
     "vitest": "^1.0.0"
   },
-  "type": "module"
+  "dependencies": {
+    "@tanstack/svelte-query": "^5.17.19",
+    "axios": "^1.6.5",
+    "zod": "^3.22.4"
+  }
 }
