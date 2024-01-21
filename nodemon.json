@@ -1,8 +1,8 @@
 {
   "ext": "go",
-  "delay": 1,
+  "delay": 100,
   "verbose": true,
-  "signal": "SIGTERM",
+  "signal": "SIGKILL",
   "ignore": [
     "./frontend"
   ],
