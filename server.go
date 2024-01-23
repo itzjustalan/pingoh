@@ -26,9 +26,7 @@ func main() {
 
 	app.Use(logger.New())
 	app.Use(recover.New())
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://127.0.0.1:3000",
-	}))
+	app.Use(cors.New())
 
 	api.AddRoutes(app)
 

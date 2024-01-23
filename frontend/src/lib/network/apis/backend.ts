@@ -7,7 +7,6 @@ export { type AxiosInstance } from 'axios';
 
 const backendApi: AxiosInstance = axios.create({
 	baseURL: "http://localhost:3000/api",
-	withCredentials: true,
 });
 
 backendApi.defaults.headers.common['Content-Type'] = 'application/json';
