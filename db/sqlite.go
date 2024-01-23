@@ -7,19 +7,26 @@ import (
 
 var DB *sqlx.DB
 
+func panicOnErr(err error, reason string) {
+	if err != nil {
+		panic(reason + err.Error())
+	}
+}
+
 func ConnectDB() {
 	var err error
 	DB, err = sqlx.Connect("sqlite", "./data.db")
-	if err != nil {
-		panic("error connecting to db!")
-	}
+	panicOnErr(err, "error connecting to db!")
 	// defer DB.Close()
 
 	// connection pool options
 	DB.SetMaxIdleConns(4)
 
 	// create tables
-	CreateUsersTable()
+	err = createUsersTable()
+	panicOnErr(err, "err creating table")
+	err = createTasksTable()
+	panicOnErr(err, "err creating table")
 }
 
 // db, err := sqlx.Open("sqlite", "./data.db")

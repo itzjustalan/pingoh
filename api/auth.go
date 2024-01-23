@@ -6,8 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func addAuthRoutes(api fiber.Router) {
-	auth := api.Group("/auth")
+func addAuthRoutes(api *fiber.Router) {
+	auth := (*api).Group("/auth")
 
 	auth.Post("/signup", func(c *fiber.Ctx) error {
 		var b handlers.AuthCredentials

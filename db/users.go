@@ -51,7 +51,7 @@ func (v *UserAccess) Scan(src interface{}) error {
 	return nil
 }
 
-func CreateUsersTable() error {
+func createUsersTable() error {
 
 	// name VARCHAR(255) NOT NULL,
 	// email VARCHAR(255) UNIQUE NOT NULL,
