@@ -1,12 +1,16 @@
 package db
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type UserRole string
+type UserAccess []string
 
 const (
 	UserRoleAdmin UserRole = "admin"
@@ -15,13 +19,36 @@ const (
 
 type User struct {
 	// ID        uint64
-	ID        int       `json:"-"`
-	UID       string    `json:"uid"`
-	Email     string    `json:"email"`
-	PwHash    string    `json:"-" db:"pw_hash"`
-	Role      UserRole  `json:"role"`
-	Access    string    `json:"access"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	ID        int        `json:"-"`
+	UID       string     `json:"uid"`
+	Email     string     `json:"email"`
+	PwHash    string     `json:"-" db:"pw_hash"`
+	Role      UserRole   `json:"role"`
+	Access    UserAccess `json:"access"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+}
+
+func (v UserAccess) Value() (driver.Value, error) {
+	// return driver.Value(strings.Join(v, " ")), nil
+	jstr, err := json.Marshal(v)
+	if err != nil {
+		return driver.Value(""), err
+	}
+	return driver.Value(jstr), nil
+}
+
+func (v *UserAccess) Scan(src interface{}) error {
+	switch src := src.(type) {
+	case string:
+		// *v = strings.Split(src, " ")
+		err := json.Unmarshal([]byte(src), v)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("incompatible type for UserAccess: %T", src)
+	}
+	return nil
 }
 
 func CreateUsersTable() error {
@@ -63,7 +90,7 @@ func potentialAdmin() (UserRole, error) {
 
 func CreateUser(u *User) (int64, error) {
 	q := `
-	INSERT INTO users (uid, email, pw_hash, role, access) VALUES (?, ?, ?, ?, ?)
+	INSERT INTO users (uid, email, pw_hash, role) VALUES (?, ?, ?, ?)
 	`
 	if u.Role == "" {
 		role, err := potentialAdmin()
@@ -72,8 +99,7 @@ func CreateUser(u *User) (int64, error) {
 		}
 		u.Role = role
 	}
-	// jstr, err := json.Marshal([]string{})
-	res, err := DB.Exec(q, uuid.New().String(), u.Email, u.PwHash, u.Role, "[]")
+	res, err := DB.Exec(q, uuid.New().String(), u.Email, u.PwHash, u.Role)
 	if err != nil {
 		return 0, err
 	}

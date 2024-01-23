@@ -2,15 +2,16 @@ package services
 
 import (
 	"errors"
+	"pingoh/db"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserClaims struct {
-	UID    string `json:"uid"`
-	Role   string `json:"role"`
-	Access string `json:"access"`
+	UID    string        `json:"uid"`
+	Role   string        `json:"role"`
+	Access db.UserAccess `json:"access"`
 	jwt.RegisteredClaims
 }
 
@@ -22,7 +23,7 @@ type JwtTokens struct {
 var issuer = "pingoh"
 var secret = "secret"
 
-func NewJwtTokens(uid string, role string, access string) (JwtTokens, error) {
+func NewJwtTokens(uid string, role string, access db.UserAccess) (JwtTokens, error) {
 	var tokens JwtTokens
 	accessToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
 		UID:    uid,
