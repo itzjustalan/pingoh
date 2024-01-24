@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"pingoh/db"
 	"pingoh/services"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -76,13 +75,9 @@ func Signin(creds *AuthCredentials) (AuthenticatedUser, error) {
 
 func RefreshTokens(token string) (services.JwtTokens, error) {
 	var tokens services.JwtTokens
-	claims, err := services.ParseTokenClaims(token)
+	claims, err := services.ValidateToken(token)
 	if err != nil {
 		return tokens, err
-	}
-	if claims.ExpiresAt.Time.Compare(time.Now()) < 0 {
-		return tokens, fiber.NewError(
-			fiber.ErrUnauthorized.Code, "token expired")
 	}
 	tokens, err = services.NewJwtTokens(claims.UID, claims.Role, claims.Access)
 	if err != nil {

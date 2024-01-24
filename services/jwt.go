@@ -57,7 +57,7 @@ func NewJwtTokens(uid string, role string, access db.UserAccess) (JwtTokens, err
 	return JwtTokens{accessToken, refreshToken}, nil
 }
 
-func ParseTokenClaims(tokenString string) (*UserClaims, error) {
+func ValidateToken(tokenString string) (*UserClaims, error) {
 	var claims *UserClaims
 	token, err := jwt.ParseWithClaims(
 		tokenString,
@@ -72,6 +72,9 @@ func ParseTokenClaims(tokenString string) (*UserClaims, error) {
 		return claims, errors.New("invalid token")
 	}
 	if claims, ok := token.Claims.(*UserClaims); ok {
+		if claims.ExpiresAt.Time.Compare(time.Now()) < 0 {
+			return claims, errors.New("token expired")
+		}
 		return claims, err
 	} else {
 		return claims, errors.New("bad claims")

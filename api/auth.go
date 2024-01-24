@@ -2,9 +2,28 @@ package api
 
 import (
 	"pingoh/handlers"
+	"pingoh/services"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+func addAuthMiddle(api *fiber.Router) {
+	(*api).Use(func(c *fiber.Ctx) error {
+		v := strings.Split(c.Get("Authorization"), " ")
+		if len(v) != 2 || v[0] != "Bearer" {
+			return fiber.ErrUnauthorized
+		}
+		claims, err := services.ValidateToken(v[1])
+		if err != nil {
+			return err
+		}
+		c.Locals("uid", claims.UID)
+		c.Locals("role", claims.Role)
+		c.Locals("access", claims.Access)
+		return c.Next()
+	})
+}
 
 func addAuthRoutes(api *fiber.Router) {
 	auth := (*api).Group("/auth")
