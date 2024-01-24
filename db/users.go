@@ -2,8 +2,6 @@ package db
 
 import (
 	"database/sql/driver"
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,26 +27,11 @@ type User struct {
 }
 
 func (v UserAccess) Value() (driver.Value, error) {
-	// return driver.Value(strings.Join(v, " ")), nil
-	jstr, err := json.Marshal(v)
-	if err != nil {
-		return driver.Value(""), err
-	}
-	return driver.Value(jstr), nil
+	return jsonSqlValuer(v)
 }
 
 func (v *UserAccess) Scan(src interface{}) error {
-	switch src := src.(type) {
-	case string:
-		// *v = strings.Split(src, " ")
-		err := json.Unmarshal([]byte(src), v)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("incompatible type for UserAccess: %T", src)
-	}
-	return nil
+	return jsonSqlScanner(v, src)
 }
 
 func createUsersTable() error {
@@ -61,7 +44,7 @@ func createUsersTable() error {
 		uid TEXT UNIQUE NOT NULL,
 		email TEXT UNIQUE NOT NULL,
 		pw_hash TEXT NOT NULL,
-		role TEXT CHECK( role IN ('admin','user') ) NOT NULL DEFAULT 'user',
+		role TEXT NOT NULL DEFAULT 'user' CHECK ( role IN ('admin','user') ),
 		access TEXT NOT NULL DEFAULT "[]",
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	) 

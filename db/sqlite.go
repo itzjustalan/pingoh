@@ -9,7 +9,7 @@ var DB *sqlx.DB
 
 func panicOnErr(err error, reason string) {
 	if err != nil {
-		panic(reason + err.Error())
+		panic(reason +" " + err.Error())
 	}
 }
 
@@ -27,13 +27,12 @@ func ConnectDB() {
 	panicOnErr(err, "err creating table")
 	err = createTasksTable()
 	panicOnErr(err, "err creating table")
+	err = createHttpTasksTable()
+	panicOnErr(err, "err creating table")
+	err = createHttpAuthsTable()
+	panicOnErr(err, "err creating table")
 }
 
 // db, err := sqlx.Open("sqlite", "./data.db")
 // db := sqlx.MustConnect("sqlite", ":memory:")
 // db := sqlx.MustConnect("sqlite", "./data.db")
-
-// err := db.Ping()
-// if err != nil {
-// 	fmt.Println(err)
-// }
