@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func addAuthMiddle(api *fiber.Router) {
+func addAuthChecks(api *fiber.Router) {
 	(*api).Use(func(c *fiber.Ctx) error {
 		v := strings.Split(c.Get("Authorization"), " ")
 		if len(v) != 2 || v[0] != "Bearer" {

@@ -7,30 +7,34 @@ import (
 )
 
 type NewTask struct {
-	Name                string            `json:"name"`
-	Type                string            `json:"type"`
-	Repeat              bool              `json:"repeat"`
-	Interval            int               `json:"interval"`
-	Description         string            `json:"description"`
-	Tags                []string          `json:"tags"`
-	Method              string            `json:"method"`
-	URL                 string            `json:"url"`
-	Body                string            `json:"body"`
-	Headers             map[string]string `json:"headers"`
-	Encoding            string            `json:"encoding"`
-	Retries             int               `json:"retries"`
-	Timeout             int               `json:"timeout"`
-	AcceptedStatusCodes []int             `json:"accepted_status_codes"`
-	AuthMethod          string            `json:"auth_method"`
-	Auth                struct {
-		Username          string `json:"username"`
-		Password          string `json:"password"`
-		OauthMethod       string `json:"oauth_method"`
-		OauthUrl          string `json:"oauth_url"`
-		OauthClientID     string `json:"oauth_client_id"`
-		OauthClientSecret string `json:"oauth_client_secret"`
-		OauthClientScope  string `json:"oauth_client_scope"`
-	} `json:"auth"`
+	Name        string   `json:"name" validate:"required"`
+	Type        string   `json:"type" validate:"required,eq=http"`
+	Repeat      bool     `json:"repeat" validate:"required,boolean"`
+	Interval    int      `json:"interval" validate:"required,gte=10"`
+	Description string   `json:"description" validate:"required,omitempty"`
+	Tags        []string `json:"tags" validate:"required,dive,unique"`
+	Http        struct {
+		Method              string            `json:"method" validate:"required,oneof=get post put patch delete head options"`
+		URL                 string            `json:"url" validate:"required,url"`
+		Body                string            `json:"body"`
+		Headers             map[string]string `json:"headers" validate:"required"`
+		Encoding            string            `json:"encoding" validate:"required,oneof=none text html form json xml"`
+		Retries             int               `json:"retries" validate:"gte=0"`
+		Timeout             int               `json:"timeout" validate:"gte=0"`
+		AcceptedStatusCodes []int             `json:"accepted_status_codes" validate:"required,unique,dive,number"`
+		AuthMethod          string            `json:"auth_method" validate:"required,oneof=none basic oauth2"`
+		BasicAuth           struct {
+			Username string `json:"username" validate:"required"`
+			Password string `json:"password" validate:"required"`
+		} `json:"basic_auth" validate:"required_if=AuthMethod basic"`
+		OAuth2 struct {
+			OauthMethod       string `json:"oauth_method" validate:"required"`
+			OauthUrl          string `json:"oauth_url" validate:"required,url"`
+			OauthClientID     string `json:"oauth_client_id" validate:"required"`
+			OauthClientSecret string `json:"oauth_client_secret" validate:"required"`
+			OauthClientScope  string `json:"oauth_client_scope" validate:"required"`
+		} `json:"oauth2" validate:"required_if=AuthMethod oauth2"`
+	} `json:"http" validate:"required_if=Method http"`
 }
 
 func CreateNewTask(t *NewTask) error {
@@ -50,27 +54,27 @@ func CreateNewTask(t *NewTask) error {
 	case "http":
 		ht := db.HttpTask{
 			TaskID:              int(tid),
-			Method:              db.HttpTaskMethod(t.Method),
-			Url:                 t.URL,
-			Body:                t.Body,
-			Encoding:            db.HttpTaskBodyEncoding(t.Encoding),
-			Headers:             t.Headers,
-			Retries:             t.Retries,
-			Timeout:             t.Timeout,
-			AcceptedStatusCodes: t.AcceptedStatusCodes,
-			AuthMethod:          db.HttpTaskAuthMethod(t.AuthMethod),
+			Method:              db.HttpTaskMethod(t.Http.Method),
+			Url:                 t.Http.URL,
+			Body:                t.Http.Body,
+			Encoding:            db.HttpTaskBodyEncoding(t.Http.Encoding),
+			Headers:             t.Http.Headers,
+			Retries:             t.Http.Retries,
+			Timeout:             t.Http.Timeout,
+			AcceptedStatusCodes: t.Http.AcceptedStatusCodes,
+			AuthMethod:          db.HttpTaskAuthMethod(t.Http.AuthMethod),
 		}
 		_, err := db.CreateHttpTask(&ht)
 		if err != nil {
 			return err
 		}
-		switch t.AuthMethod {
+		switch t.Http.AuthMethod {
 		case "none":
 			break
 		case "basic":
 			ba := db.HttpBasicAuth{
-				Username: t.Auth.Username,
-				Password: t.Auth.Password,
+				Username: t.Http.BasicAuth.Username,
+				Password: t.Http.BasicAuth.Password,
 			}
 			_, err := db.CreateHttpBasicAuth(int(tid), &ba)
 			if err != nil {
@@ -78,11 +82,11 @@ func CreateNewTask(t *NewTask) error {
 			}
 		case "oauth2":
 			oa := db.HttpOAuth2Auth{
-				Method:       db.HttpOAuth2AuthMethod(t.Auth.OauthMethod),
-				Url:          t.Auth.OauthUrl,
-				ClientID:     t.Auth.OauthClientID,
-				ClientSecret: t.Auth.OauthClientSecret,
-				ClientScope:  t.Auth.OauthClientScope,
+				Method:       db.HttpOAuth2AuthMethod(t.Http.OAuth2.OauthMethod),
+				Url:          t.Http.OAuth2.OauthUrl,
+				ClientID:     t.Http.OAuth2.OauthClientID,
+				ClientSecret: t.Http.OAuth2.OauthClientSecret,
+				ClientScope:  t.Http.OAuth2.OauthClientScope,
 			}
 			_, err := db.CreateHttpOAuth(int(tid), &oa)
 			if err != nil {

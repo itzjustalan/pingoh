@@ -18,11 +18,14 @@ func addTaskRoutes(api *fiber.Router) {
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
-		err := handlers.CreateNewTask(&b)
+		err := handlers.Validator.Struct(&b)
+		if err != nil {
+			return err
+		}
+		err = handlers.CreateNewTask(&b)
 		if err != nil {
 			return err
 		}
 		return nil
-		// return c.JSON(b)
 	})
 }

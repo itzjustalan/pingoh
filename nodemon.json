@@ -1,10 +1,11 @@
 {
   "ext": "go",
-  "delay": 100,
+  "delay": 800,
   "verbose": true,
   "signal": "SIGKILL",
   "ignore": [
-    "./frontend"
+    "./frontend",
+    "./data.db*"
   ],
   "exec": "go run ./..."
 }
