@@ -3,8 +3,6 @@ package db
 import (
 	"database/sql/driver"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type UserRole string
@@ -16,9 +14,8 @@ const (
 )
 
 type User struct {
-	// ID        uint64
 	ID        int        `json:"-"`
-	UID       string     `json:"uid"`
+	// UID       string     `json:"uid"`
 	Email     string     `json:"email"`
 	PwHash    string     `json:"-" db:"pw_hash"`
 	Role      UserRole   `json:"role"`
@@ -36,12 +33,12 @@ func (v *UserAccess) Scan(src interface{}) error {
 
 func createUsersTable() error {
 
+	// uid TEXT UNIQUE NOT NULL,
 	// name VARCHAR(255) NOT NULL,
 	// email VARCHAR(255) UNIQUE NOT NULL,
 	q := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		uid TEXT UNIQUE NOT NULL,
 		email TEXT UNIQUE NOT NULL,
 		pw_hash TEXT NOT NULL,
 		role TEXT NOT NULL DEFAULT 'user' CHECK ( role IN ('admin','user') ),
@@ -73,7 +70,7 @@ func potentialAdmin() (UserRole, error) {
 
 func CreateUser(u *User) (int64, error) {
 	q := `
-	INSERT INTO users (uid, email, pw_hash, role) VALUES (?, ?, ?, ?)
+	INSERT INTO users (email, pw_hash, role) VALUES (?, ?, ?)
 	`
 	if u.Role == "" {
 		role, err := potentialAdmin()
@@ -82,7 +79,7 @@ func CreateUser(u *User) (int64, error) {
 		}
 		u.Role = role
 	}
-	res, err := DB.Exec(q, uuid.New().String(), u.Email, u.PwHash, u.Role)
+	res, err := DB.Exec(q, u.Email, u.PwHash, u.Role)
 	if err != nil {
 		return 0, err
 	}
@@ -95,15 +92,6 @@ func FindUserByID(id int) (User, error) {
 	`
 	var u User
 	err := DB.Get(&u, q, id)
-	return u, err
-}
-
-func FindUserByUID(uid string) (User, error) {
-	q := `
-	SELECT * FROM users WHERE uid = ?
-	`
-	var u User
-	err := DB.Get(&u, q, uid)
 	return u, err
 }
 

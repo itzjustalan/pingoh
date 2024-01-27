@@ -1,15 +1,30 @@
 package handlers
 
 import (
+	"fmt"
 	"pingoh/db"
+	"pingoh/services"
+	"slices"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog/log"
+	"github.com/valyala/fasthttp"
 )
+
+var TaskChannels map[int]struct {
+	Active bool
+	Stop   chan bool
+} = make(map[int]struct {
+	Active bool
+	Stop   chan bool
+})
 
 type NewTask struct {
 	Name        string   `json:"name" validate:"required"`
 	Type        string   `json:"type" validate:"required,eq=http"`
 	Repeat      bool     `json:"repeat" validate:"required,boolean"`
+	Active      bool     `json:"active" validate:"required,boolean"`
 	Interval    int      `json:"interval" validate:"required,gte=10"`
 	Description string   `json:"description" validate:"required,omitempty"`
 	Tags        []string `json:"tags" validate:"required,dive,unique"`
@@ -41,6 +56,7 @@ func CreateNewTask(t *NewTask) error {
 	tm := db.Task{
 		Name:        t.Name,
 		Repeat:      t.Repeat,
+		Active:      t.Active,
 		Interval:    t.Interval,
 		Description: t.Description,
 		Tags:        t.Tags,
@@ -52,6 +68,7 @@ func CreateNewTask(t *NewTask) error {
 	}
 	switch t.Type {
 	case "http":
+		slices.Sort(t.Http.AcceptedStatusCodes)
 		ht := db.HttpTask{
 			TaskID:              int(tid),
 			Method:              db.HttpTaskMethod(t.Http.Method),
@@ -98,5 +115,132 @@ func CreateNewTask(t *NewTask) error {
 	default:
 		return fiber.NewError(fiber.ErrBadRequest.Code, "task type not supported")
 	}
+	StartTaskByTaskID(int(tid))
 	return nil
+}
+
+func StartTasks() {
+	log.Info().Msg("starting tasks")
+	tasks, err := db.GetAllActiveTasks()
+	if err != nil {
+		log.Error().Err(err).Msg("error fetching tasks from db")
+		return
+	}
+	for i := 0; i < len(tasks); i++ {
+		go startTask(tasks[i])
+	}
+}
+
+func StartTaskByTaskID(tid int) error {
+	if v, ok := TaskChannels[tid]; ok && v.Active {
+		return nil
+	}
+	err := db.ActivateTaskByID(tid)
+	if err != nil {
+		return err
+	}
+	task, err := db.GetTaskByID(tid)
+	if err != nil {
+		return err
+	}
+	go startTask(task)
+	return nil
+}
+
+func StopTaskByTaskID(tid int) error {
+	if v, ok := TaskChannels[tid]; ok {
+		v.Active = false
+		v.Stop <- true
+	}
+	return db.DeactivateTaskByID(tid)
+}
+
+func startTask(t db.Task) {
+	log.Info().Msgf("starting task: %v - %v", t.Name, t.ID)
+	ticker := time.NewTicker(time.Second * time.Duration(t.Interval))
+	defer ticker.Stop()
+	if v, ok := TaskChannels[t.ID]; ok {
+		v.Active = t.Active
+	} else {
+		TaskChannels[t.ID] = struct {
+			Active bool
+			Stop   chan bool
+		}{
+			t.Active, make(chan bool),
+		}
+	}
+
+	for {
+		select {
+		case <-TaskChannels[t.ID].Stop:
+			log.Info().Msgf("stopping task: %v - %v", t.Name, t.ID)
+			if v, ok := TaskChannels[t.ID]; ok {
+				v.Active = false
+			}
+			return
+		case <-ticker.C:
+			if v, ok := TaskChannels[t.ID]; ok && v.Active {
+				log.Info().Msgf("rinning task: %v - %v", t.Name, t.ID)
+				switch t.Type {
+				case "http":
+					runHttpTask(&t)
+				}
+				if !t.Repeat {
+					return
+				}
+			} else {
+				log.Info().Msgf("task inactive! clearing from list: %v - %v", t.Name, t.ID)
+				v.Stop <- true
+			}
+		}
+	}
+}
+
+func runHttpTask(task *db.Task) {
+	log.Info().Msgf("rensing http req: v - v")
+	t, err := db.GetHttpTaskByTaskID(task.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	client := fasthttp.Client{}
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+	req.SetRequestURI(t.Url)
+	req.SetBodyRaw([]byte(t.Body))
+	req.Header.SetMethod(string(t.Method))
+	req.Header.Set("Content-Type", services.HeaderForEncoding(string(t.Encoding)))
+	for k, v := range t.Headers {
+		req.Header.Set(k, v)
+	}
+
+	res := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(res)
+
+	for i := 0; i <= t.Retries; i++ {
+		startTime := time.Now()
+		err = client.DoTimeout(req, res, time.Duration(t.Timeout*int(time.Second)))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		success := slices.Contains(t.AcceptedStatusCodes, res.StatusCode())
+		if success {
+			db.AddHttpResult(&db.HttpResult{
+				TaskID:   t.TaskID,
+				Code:     res.StatusCode(),
+				Ok:       success,
+				Duration: time.Since(startTime),
+			})
+			break
+		} else if i == t.Retries {
+			db.AddHttpResult(&db.HttpResult{
+				TaskID:   t.TaskID,
+				Code:     res.StatusCode(),
+				Ok:       success,
+				Duration: time.Since(startTime),
+			})
+		}
+	}
 }

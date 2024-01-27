@@ -40,7 +40,7 @@ func Signup(creds *AuthCredentials) (AuthenticatedUser, error) {
 	if err != nil {
 		return u, err
 	}
-	tokens, err := services.NewJwtTokens(user.UID, string(user.Role), user.Access)
+	tokens, err := services.NewJwtTokens(user.ID, string(user.Role), user.Access)
 	if err != nil {
 		return u, err
 	}
@@ -64,7 +64,7 @@ func Signin(creds *AuthCredentials) (AuthenticatedUser, error) {
 		return u, fiber.NewError(
 			fiber.ErrBadRequest.Code, "wrong password")
 	}
-	tokens, err := services.NewJwtTokens(user.UID, string(user.Role), user.Access)
+	tokens, err := services.NewJwtTokens(user.ID, string(user.Role), user.Access)
 	if err != nil {
 		return u, err
 	}
@@ -79,7 +79,7 @@ func RefreshTokens(token string) (services.JwtTokens, error) {
 	if err != nil {
 		return tokens, err
 	}
-	tokens, err = services.NewJwtTokens(claims.UID, claims.Role, claims.Access)
+	tokens, err = services.NewJwtTokens(claims.ID, claims.Role, claims.Access)
 	if err != nil {
 		return tokens, err
 	}

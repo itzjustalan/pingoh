@@ -3,13 +3,14 @@ package db
 import (
 	_ "github.com/glebarez/go-sqlite"
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog/log"
 )
 
 var DB *sqlx.DB
 
 func panicOnErr(err error, reason string) {
 	if err != nil {
-		panic(reason +" " + err.Error())
+		log.Panic().Msg(reason + " " + err.Error())
 	}
 }
 
@@ -30,6 +31,8 @@ func ConnectDB() {
 	err = createHttpTasksTable()
 	panicOnErr(err, "err creating table")
 	err = createHttpAuthsTable()
+	panicOnErr(err, "err creating table")
+	err = createHttpResultTable()
 	panicOnErr(err, "err creating table")
 }
 

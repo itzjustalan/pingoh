@@ -18,7 +18,7 @@ func addAuthChecks(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
-		c.Locals("uid", claims.UID)
+		c.Locals("uid", claims.ID)
 		c.Locals("role", claims.Role)
 		c.Locals("access", claims.Access)
 		return c.Next()

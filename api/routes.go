@@ -10,8 +10,9 @@ func AddRoutes(app *fiber.App) {
 	addAuthRoutes(&api)
 	addAuthChecks(&api)
 	addTaskRoutes(&api)
+	addStatsRoutes(&api)
 
-	api.Get("/h", func(c *fiber.Ctx) error {
-		return c.JSON([]string{"key", "val"})
+	api.Get("/hc", func(c *fiber.Ctx) error {
+		return c.JSON([]string{"all", "gud"})
 	})
 }

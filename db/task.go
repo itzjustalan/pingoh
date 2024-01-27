@@ -3,14 +3,13 @@ package db
 import (
 	"database/sql/driver"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Task struct {
 	ID          int       `json:"-"`
-	UID         string    `json:"uid"`
+	// UID         string    `json:"uid"`
 	Name        string    `json:"name"`
+	Active      bool      `json:"active"`
 	Repeat      bool      `json:"repeat"`
 	Interval    int       `json:"interval"`
 	Description string    `json:"description"`
@@ -20,7 +19,8 @@ type Task struct {
 }
 
 type HttpTask struct {
-	TaskID              int                  `json:"-" db:"task_id"`
+	ID                  int                  `json:"-"`
+	TaskID              int                  `json:"task_id" db:"task_id"`
 	Method              HttpTaskMethod       `json:"method"`
 	Url                 string               `json:"url"`
 	Body                string               `json:"body"`
@@ -28,8 +28,8 @@ type HttpTask struct {
 	Encoding            HttpTaskBodyEncoding `json:"encoding"`
 	Retries             int                  `json:"retries"`
 	Timeout             int                  `json:"timeout"`
-	AcceptedStatusCodes HttpTaskStatusCodes  `json:"accepted_status_codes"`
-	AuthMethod          HttpTaskAuthMethod   `json:"auth_method"`
+	AcceptedStatusCodes HttpTaskStatusCodes  `json:"accepted_status_codes" db:"accepted_status_codes"`
+	AuthMethod          HttpTaskAuthMethod   `json:"auth_method" db:"auth_method"`
 }
 
 type HttpBasicAuth struct {
@@ -43,6 +43,13 @@ type HttpOAuth2Auth struct {
 	ClientID     string               `json:"client_id"`
 	ClientSecret string               `json:"client_secret"`
 	ClientScope  string               `json:"client_scope"`
+}
+
+type HttpAuth struct {
+	HttpBasicAuth
+	HttpOAuth2Auth
+	ID     int `json:"-"`
+	TaskID int `json:"task_id" db:"task_id"`
 }
 
 type TaskType string
@@ -112,9 +119,9 @@ func createTasksTable() error {
 	q := `
 	CREATE TABLE IF NOT EXISTS tasks (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		uid TEXT UNIQUE NOT NULL,
 		name TEXT NOT NULL,
 		repeat BOOLEAN NOT NULL,
+		active BOOLEAN NOT NULL,
 		interval INTEGER NOT NULL,
 		tags TEXT NOT NULL DEFAULT "[]",
 		description TEXT NOT NULL DEFAULT "",
@@ -188,16 +195,16 @@ func createHttpAuthsTable() error {
 func CreateTask(t *Task) (int64, error) {
 	q := `
 	INSERT INTO tasks (
-		uid,
 		name,
 		repeat,
+		active,
 		interval,
 		description,
 		tags,
 		type
 	) VALUES (?, ?, ?, ?, ?, ?, ?)
 	`
-	res, err := DB.Exec(q, uuid.New().String(), t.Name, t.Repeat, t.Interval, t.Description, t.Tags, t.Type)
+	res, err := DB.Exec(q, t.Name, t.Repeat, t.Active, t.Interval, t.Description, t.Tags, t.Type)
 	if err != nil {
 		return 0, err
 	}
@@ -257,4 +264,37 @@ func CreateHttpOAuth(tid int, m *HttpOAuth2Auth) (int64, error) {
 		return 0, err
 	}
 	return res.LastInsertId()
+}
+
+func GetAllActiveTasks() ([]Task, error) {
+	q := `SELECT * FROM tasks WHERE active = true`
+	var tasks []Task
+	err := DB.Select(&tasks, q)
+	return tasks, err
+}
+
+func GetTaskByID(id int) (Task, error) {
+	q := `SELECT * FROM tasks WHERE id = ?`
+	var task Task
+	err := DB.Get(&task, q, id)
+	return task, err
+}
+
+func ActivateTaskByID(id int) error {
+	q := `UPDATE tasks SET active = true WHERE id = ?`
+	_, err := DB.Exec(q, id)
+	return err
+}
+
+func DeactivateTaskByID(id int) error {
+	q := `UPDATE tasks SET active = false WHERE id = ?`
+	_, err := DB.Exec(q, id)
+	return err
+}
+
+func GetHttpTaskByTaskID(tid int) (HttpTask, error) {
+	q := `SELECT * FROM http_tasks WHERE task_id = ?`
+	var doc HttpTask
+	err := DB.Get(&doc, q, tid)
+	return doc, err
 }

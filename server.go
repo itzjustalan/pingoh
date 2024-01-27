@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"pingoh/api"
 	"pingoh/db"
+	"pingoh/handlers"
 	"syscall"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,15 +15,19 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 //go:embed all:frontend/build
 var dashboard embed.FS
 
 func main() {
+	setLogger()
 	db.ConnectDB()
 	go listenAndStop()
 	app := fiber.New()
+	handlers.StartTasks()
 
 	app.Use(logger.New())
 	app.Use(recover.New())
@@ -51,4 +56,21 @@ func listenAndStop() {
 	<-c
 	// app.Shutdown()
 	os.Exit(1)
+}
+
+func setLogger() {
+	// zerolog.ErrorFieldName = "e"
+	// zerolog.LevelFieldName = "l"
+	// zerolog.CallerFieldName = "c"
+	// zerolog.MessageFieldName = "m"
+	// zerolog.TimestampFieldName = "t"
+	// zerolog.ErrorStackFieldName = "s"
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+
+	// todo: console only on dev
+	file, _ := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout}
+	multiw := zerolog.MultiLevelWriter(consoleWriter, file)
+	log.Logger = log.Output(multiw)
+	// defer file.Close()
 }

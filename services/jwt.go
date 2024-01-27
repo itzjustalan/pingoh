@@ -9,7 +9,7 @@ import (
 )
 
 type UserClaims struct {
-	UID    string        `json:"uid"`
+	ID     int        `json:"id"`
 	Role   string        `json:"role"`
 	Access db.UserAccess `json:"access"`
 	jwt.RegisteredClaims
@@ -23,10 +23,10 @@ type JwtTokens struct {
 var issuer = "pingoh"
 var secret = "secret"
 
-func NewJwtTokens(uid string, role string, access db.UserAccess) (JwtTokens, error) {
+func NewJwtTokens(id int, role string, access db.UserAccess) (JwtTokens, error) {
 	var tokens JwtTokens
 	accessToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		UID:    uid,
+		ID:     id,
 		Role:   role,
 		Access: access,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -40,7 +40,7 @@ func NewJwtTokens(uid string, role string, access db.UserAccess) (JwtTokens, err
 		return tokens, err
 	}
 	refreshToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		UID:    uid,
+		ID:     id,
 		Role:   role,
 		Access: access,
 		RegisteredClaims: jwt.RegisteredClaims{

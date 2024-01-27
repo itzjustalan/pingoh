@@ -28,4 +28,20 @@ func addTaskRoutes(api *fiber.Router) {
 		}
 		return nil
 	})
+
+	r.Get("/activate/:task_id", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("task_id")
+		if err != nil {
+			return err
+		}
+		return handlers.StartTaskByTaskID(id)
+	})
+
+	r.Get("/deactivate/:task_id", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("task_id")
+		if err != nil {
+			return err
+		}
+		return handlers.StopTaskByTaskID(id)
+	})
 }
