@@ -5,6 +5,10 @@
 	import { uacController } from "$lib/user.access.controller";
 	import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
 	import { get } from "svelte/store";
+	import { appTheme } from "$lib/stores/theme";
+    import "../css/theme.css";
+    import "../css/reset.css";
+    import "../css/app.css";
 
     // authenticate client side routing
     beforeNavigate((navigation) => {
@@ -24,7 +28,9 @@
         <a href="/">Home</a>
         <a href="/about">About</a>
         <a href="/auth/signin">signin</a>
+        <a href="/dbg/col">colors</a>
         {$authedUser?.role ?? '-'}
+        <button on:click={() => appTheme.toggle()}>toggle</button>
     </nav>
     <slot />
 </QueryClientProvider>

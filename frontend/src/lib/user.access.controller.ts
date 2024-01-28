@@ -38,17 +38,16 @@ export const accessRoutes: {
 			roles: [UserRoles.Guest],
 			access: {},
 		},
-	},
-	post: {
-		'/v1/api/auth/signin': {
+		'/dbg': {
 			roles: [UserRoles.Guest],
 			access: {},
 		},
-		'/v1/api/auth/signup': {
+		'/dbg/col': {
 			roles: [UserRoles.Guest],
 			access: {},
 		},
 	},
+	post: {},
 	put: {},
 	delete: {},
 };
