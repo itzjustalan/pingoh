@@ -26,7 +26,9 @@
 <!-- <pre>{JSON.stringify(data)}</pre>
 <pre>{JSON.stringify(form)}</pre> -->
 
-<h1>signup</h1>
+<div class="title">
+Signup
+</div>
 
 {#if $signup.isPending}
 	loading...
@@ -42,9 +44,14 @@
 	<pre>{JSON.stringify($signup.error)}</pre>
 {/if}
 
-user<input type="text" name="username" bind:value={email} required />
-<input type="password" name="password" bind:value={passw} required />
-<button disabled={$signup.isPending} on:click={handleSignup}>summit</button>
-this is - signUP
-<br />
-have account? <a href="/auth/signin">signIN</a>
+<br>
+<input type="text" name="username" bind:value={email} required /> usernamE <br>
+<input type="password" name="password" bind:value={passw} required /> passworD <br>
+<button disabled={$signup.isPending} on:click={handleSignup}>Submit</button> this is a - signUP <br>
+have an account? <a href="/auth/signin">signIN</a>
+
+<style>
+	.title {
+		font-size: 4rem;
+	}
+</style>

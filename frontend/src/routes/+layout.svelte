@@ -4,7 +4,6 @@
 	import { authedUser } from "$lib/stores/auth";
 	import { uacController } from "$lib/user.access.controller";
 	import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
-	import { get } from "svelte/store";
 	import { appTheme } from "$lib/stores/theme";
     import "../css/theme.css";
     import "../css/reset.css";
@@ -13,7 +12,7 @@
     // authenticate client side routing
     beforeNavigate((navigation) => {
         if (navigation.willUnload) return;
-        const error = uacController.authorize(get(authedUser), navigation.to?.url.pathname ?? '', 'get')
+        const error = uacController.authorize(authedUser.get(), navigation.to?.url.pathname ?? '', 'get')
 		if (browser && error) {
 			navigation.cancel()
 			alert(error.message)

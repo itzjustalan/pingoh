@@ -7,7 +7,7 @@ export const userModelSchema = z.object({
 	email: z.string().max(255).email(),
 	// passw: z.string().min(12).max(255),
 	role: z.nativeEnum(UserRoles),
-	access: z.string(),
-	// access: z.string().array(), //todo: custom logic with zod refine
+	// access: z.string(),
+	access: z.string().array(), //todo: custom logic with zod refine
 	createdAt: z.coerce.date(),
 }).strict();

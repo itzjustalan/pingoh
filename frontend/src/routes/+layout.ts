@@ -2,7 +2,6 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { authedUser } from '$lib/stores/auth';
 import { uacController } from '$lib/user.access.controller';
-import { get } from 'svelte/store';
 
 export const csr = true
 export const ssr = false
@@ -15,6 +14,12 @@ export const trailingSlash = 'always';
 
 export async function load(input) {
   // handle direct links
-  if (browser && uacController.authorize(get(authedUser), input.route.id ?? '', 'get')) goto("/")
+  if (browser && uacController.authorize(authedUser.get(), input.route.id ?? '', 'get')) {
+    if (authedUser.authorized()) {
+      goto('/')
+    } else {
+      goto('/signin')
+    }
+  }
   return {}
 }

@@ -22,7 +22,10 @@
 <!-- <pre>{JSON.stringify(data)}</pre>
 <pre>{JSON.stringify(form)}</pre> -->
 
-<h1>signin {$signin.status}</h1>
+<div class="page">
+<div class="title">
+	Signin
+</div>
 
 {#if $signin.isPending}
 	loading...
@@ -31,9 +34,24 @@
 	<pre>{JSON.stringify($signin.error)}</pre>
 {/if}
 
-user<input type="text" name="username" bind:value={email} required />
-<input type="password" name="password" bind:value={passw} required />
-<button disabled={$signin.isPending} on:click={handleSignin}>summit</button>
-this is - signIN
-<br />
-no account? <a href="/auth/signup">signUP</a>
+<br>
+<input type="text" name="username" bind:value={email} required /> usernamE <br>
+<input type="password" name="password" bind:value={passw} required /> passworD <br>
+<button disabled={$signin.isPending} on:click={handleSignin}>Submit</button> this is - signIN <br>
+no account yet? <a href="/auth/signup">signUP</a>
+
+</div>
+<style>
+	.page {
+		margin: 0.4rem;
+		/* width: 100vw;
+		padding: 0 40%;
+		background-color: red; */
+	}
+	.title {
+		font-size: 4rem;
+	}
+	br {
+		margin: 0.2rem;
+	}
+</style>

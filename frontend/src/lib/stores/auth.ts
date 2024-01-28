@@ -1,6 +1,6 @@
 import { browser } from "$app/environment";
 import type { UserModel } from "$lib/models/db/user.model";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 export interface AuthedUser extends UserModel {
 	access_token: string;
@@ -11,13 +11,15 @@ const storeKey = 'user';
 
 function createStore() {
   const stored = browser ? localStorage.getItem(storeKey) : null
-  const { subscribe, set, update } = writable<AuthedUser | undefined>(stored === null ? undefined : JSON.parse(stored))
+  const store = writable<AuthedUser | undefined>(stored === null ? undefined : JSON.parse(stored))
 
   return {
-    subscribe,
-    set: (u: AuthedUser) => set(u),
-    clear: () => update(() => undefined),
-    updateTokens: (tokens: Partial<AuthedUser>) => update(v => {
+    get: () => get(store),
+    subscribe: store.subscribe,
+    set: (u: AuthedUser) => store.set(u),
+    clear: () => store.update(() => undefined),
+    authorized: () => get(store) !== undefined,
+    updateTokens: (tokens: Partial<AuthedUser>) => store.update(v => {
       if (!v) return
       v.access_token = tokens.access_token ?? ''
       v.refresh_token = tokens.refresh_token ?? ''
