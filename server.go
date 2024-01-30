@@ -9,6 +9,7 @@ import (
 	"pingoh/db"
 	"pingoh/handlers"
 	"syscall"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -65,11 +66,12 @@ func setLogger() {
 	// zerolog.MessageFieldName = "m"
 	// zerolog.TimestampFieldName = "t"
 	// zerolog.ErrorStackFieldName = "s"
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.TimeFieldFormat = time.RFC3339
+	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	// todo: console only on dev
 	file, _ := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout}
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	multiw := zerolog.MultiLevelWriter(consoleWriter, file)
 	log.Logger = log.Output(multiw)
 	// defer file.Close()

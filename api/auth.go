@@ -10,11 +10,15 @@ import (
 
 func addAuthChecks(api *fiber.Router) {
 	(*api).Use(func(c *fiber.Ctx) error {
-		v := strings.Split(c.Get("Authorization"), " ")
-		if len(v) != 2 || v[0] != "Bearer" {
-			return fiber.ErrUnauthorized
+		token := c.Query("token")
+		if token == "" {
+			v := strings.Split(c.Get("Authorization"), " ")
+			if len(v) != 2 || v[0] != "Bearer" {
+				return fiber.ErrUnauthorized
+			}
+			token = v[1]
 		}
-		claims, err := services.ValidateToken(v[1])
+		claims, err := services.ValidateToken(token)
 		if err != nil {
 			return err
 		}

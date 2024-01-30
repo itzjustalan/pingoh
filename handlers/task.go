@@ -5,6 +5,8 @@ import (
 	"pingoh/db"
 	"pingoh/services"
 	"slices"
+
+	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,20 +14,48 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-var TaskChannels map[int]struct {
+type TaskChannel struct {
+	mu     sync.RWMutex
 	Active bool
 	Stop   chan bool
-} = make(map[int]struct {
-	Active bool
-	Stop   chan bool
-})
+	Subs   []chan *db.HttpResult
+}
+
+var TaskChannels = make(map[int]*TaskChannel)
+
+func (tch *TaskChannel) Deactivate() {
+	tch.mu.Lock()
+	defer tch.mu.Unlock()
+	tch.Active = false
+	tch.Stop <- true
+}
+
+func (tch *TaskChannel) Publish(r *db.HttpResult) {
+	for i := 0; i < len(tch.Subs); i++ {
+		go func(i int) { tch.Subs[i] <- r }(i)
+	}
+}
+
+func (tch *TaskChannel) Subscribe() int {
+	tch.mu.Lock()
+	defer tch.mu.Unlock()
+	ch := make(chan *db.HttpResult, 1)
+	tch.Subs = append(tch.Subs, ch)
+	return len(tch.Subs) - 1
+}
+
+func (tch *TaskChannel) Unsubscribe(subID int) {
+	tch.mu.Lock()
+	defer tch.mu.Unlock()
+	tch.Subs = append(tch.Subs[:subID], tch.Subs[subID+1:]...)
+}
 
 type NewTask struct {
 	Name        string   `json:"name" validate:"required"`
 	Type        string   `json:"type" validate:"required,eq=http"`
 	Repeat      bool     `json:"repeat" validate:"required,boolean"`
 	Active      bool     `json:"active" validate:"required,boolean"`
-	Interval    int      `json:"interval" validate:"required,gte=10"`
+	Interval    int      `json:"interval" validate:"required,gte=1"`
 	Description string   `json:"description" validate:"required,omitempty"`
 	Tags        []string `json:"tags" validate:"required,dive,unique"`
 	Http        struct {
@@ -115,7 +145,7 @@ func CreateNewTask(t *NewTask) error {
 	default:
 		return fiber.NewError(fiber.ErrBadRequest.Code, "task type not supported")
 	}
-	StartTaskByTaskID(int(tid))
+	startTask(tm)
 	return nil
 }
 
@@ -131,7 +161,7 @@ func StartTasks() {
 	}
 }
 
-func StartTaskByTaskID(tid int) error {
+func ActivateTaskByID(tid int) error {
 	if v, ok := TaskChannels[tid]; ok && v.Active {
 		return nil
 	}
@@ -147,10 +177,9 @@ func StartTaskByTaskID(tid int) error {
 	return nil
 }
 
-func StopTaskByTaskID(tid int) error {
+func DeactivateTaskByID(tid int) error {
 	if v, ok := TaskChannels[tid]; ok {
-		v.Active = false
-		v.Stop <- true
+		v.Deactivate()
 	}
 	return db.DeactivateTaskByID(tid)
 }
@@ -162,11 +191,10 @@ func startTask(t db.Task) {
 	if v, ok := TaskChannels[t.ID]; ok {
 		v.Active = t.Active
 	} else {
-		TaskChannels[t.ID] = struct {
-			Active bool
-			Stop   chan bool
-		}{
-			t.Active, make(chan bool),
+		TaskChannels[t.ID] = &TaskChannel{
+			Active: t.Active,
+			Stop:   make(chan bool),
+			Subs:   make([]chan *db.HttpResult, 0),
 		}
 	}
 
@@ -225,22 +253,25 @@ func runHttpTask(task *db.Task) {
 			fmt.Println(err)
 			return
 		}
+		var result db.HttpResult
 		success := slices.Contains(t.AcceptedStatusCodes, res.StatusCode())
 		if success {
-			db.AddHttpResult(&db.HttpResult{
+			result = db.HttpResult{
 				TaskID:   t.TaskID,
 				Code:     res.StatusCode(),
 				Ok:       success,
 				Duration: time.Since(startTime),
-			})
+			}
 			break
 		} else if i == t.Retries {
-			db.AddHttpResult(&db.HttpResult{
+			result = db.HttpResult{
 				TaskID:   t.TaskID,
 				Code:     res.StatusCode(),
 				Ok:       success,
 				Duration: time.Since(startTime),
-			})
+			}
 		}
+		TaskChannels[task.ID].Publish(&result)
+		db.AddHttpResult(&result)
 	}
 }

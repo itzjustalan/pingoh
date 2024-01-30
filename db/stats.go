@@ -44,7 +44,7 @@ func AddHttpResult(r *HttpResult) (int64, error) {
 }
 
 func SelectAllHttpResultsByTaskID(tid int) ([]HttpResult, error) {
-	q := `select * from http_results where task_id = ?`
+	q := `select * from http_results where task_id = ? ORDER BY created_at DESC LIMIT 10`
 	var res []HttpResult
 	err := DB.Select(&res, q, tid)
 	return res, err

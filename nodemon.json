@@ -1,11 +1,13 @@
 {
   "ext": "go",
   "delay": 800,
-  "verbose": true,
+  "verbose": false,
   "signal": "SIGKILL",
   "ignore": [
+    "./data.db-journal",
     "./frontend",
-    "./data.db*"
+    "./data.db*",
+    "./test.log"
   ],
   "exec": "go run ./..."
 }
