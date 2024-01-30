@@ -95,6 +95,7 @@ func CreateNewTask(t *NewTask) error {
 	if err != nil {
 		return err
 	}
+	tm.ID = int(tid)
 	switch t.Type {
 	case "http":
 		slices.Sort(t.Http.AcceptedStatusCodes)
