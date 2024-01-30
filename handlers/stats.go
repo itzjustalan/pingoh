@@ -24,8 +24,6 @@ func SendHttpResultsUpdates(tid int, c *websocket.Conn, ch chan string) {
 	subID := tch.Subscribe()
 	for {
 		select {
-		case data := <-tch.Subs[subID]:
-			c.WriteJSON(data)
 		case msg := <-ch:
 			switch msg {
 			case "stop":
@@ -33,6 +31,8 @@ func SendHttpResultsUpdates(tid int, c *websocket.Conn, ch chan string) {
 				c.Close()
 				return
 			}
+		case data := <-tch.Subs[subID]:
+			c.WriteJSON(data)
 		}
 	}
 }

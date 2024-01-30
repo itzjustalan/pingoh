@@ -32,6 +32,7 @@ func (tch *TaskChannel) Deactivate() {
 
 func (tch *TaskChannel) Publish(r *db.HttpResult) {
 	for i := 0; i < len(tch.Subs); i++ {
+		fmt.Println("publishing to", i)
 		go func(i int) { tch.Subs[i] <- r }(i)
 	}
 }
@@ -47,7 +48,9 @@ func (tch *TaskChannel) Subscribe() int {
 func (tch *TaskChannel) Unsubscribe(subID int) {
 	tch.mu.Lock()
 	defer tch.mu.Unlock()
+	fmt.Println("cmd stop", len(tch.Subs))
 	tch.Subs = append(tch.Subs[:subID], tch.Subs[subID+1:]...)
+	fmt.Println("hmm subs ln", len(tch.Subs))
 }
 
 type NewTask struct {
@@ -145,7 +148,7 @@ func CreateNewTask(t *NewTask) error {
 	default:
 		return fiber.NewError(fiber.ErrBadRequest.Code, "task type not supported")
 	}
-	startTask(tm)
+	go startTask(tm)
 	return nil
 }
 
@@ -253,25 +256,17 @@ func runHttpTask(task *db.Task) {
 			fmt.Println(err)
 			return
 		}
-		var result db.HttpResult
 		success := slices.Contains(t.AcceptedStatusCodes, res.StatusCode())
-		if success {
-			result = db.HttpResult{
+		if success || i == t.Retries {
+			result := db.HttpResult{
 				TaskID:   t.TaskID,
 				Code:     res.StatusCode(),
 				Ok:       success,
 				Duration: time.Since(startTime),
 			}
+			TaskChannels[task.ID].Publish(&result)
+			db.AddHttpResult(&result)
 			break
-		} else if i == t.Retries {
-			result = db.HttpResult{
-				TaskID:   t.TaskID,
-				Code:     res.StatusCode(),
-				Ok:       success,
-				Duration: time.Since(startTime),
-			}
 		}
-		TaskChannels[task.ID].Publish(&result)
-		db.AddHttpResult(&result)
 	}
 }

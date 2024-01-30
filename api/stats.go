@@ -29,23 +29,26 @@ func addStatsRoutes(api *fiber.Router) {
 		tid, err := strconv.Atoi(c.Params("task_id", ""))
 		if err != nil {
 			c.Close()
+			return
 		}
 		var (
 			mt  int
 			msg []byte
-			ch  chan string
 		)
+		ch := make(chan string)
 		c.SetCloseHandler(func(code int, text string) error {
 			fmt.Println("cls hndlr", code, text)
 			ch <- "stop"
+			fmt.Println("sent stp")
 			c.Close()
 			return nil
 		})
 		for {
+			fmt.Println("ni aano??")
 			if mt, msg, err = c.ReadMessage(); err != nil {
-				ch <- "stop"
+				c.WriteMessage(websocket.TextMessage, []byte("error reading command"))
 				c.Close()
-				break
+				return
 			}
 			fmt.Println("mtmsgerr", mt, msg, err)
 			switch mt {
@@ -61,6 +64,7 @@ func addStatsRoutes(api *fiber.Router) {
 					go handlers.SendHttpResultsUpdates(tid, c, ch)
 				case "stop":
 					ch <- "stop"
+					return
 				default:
 					fmt.Println("undefined cmd: " + cmd)
 					c.WriteMessage(websocket.TextMessage, []byte("unknown command"))
