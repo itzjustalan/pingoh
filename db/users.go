@@ -103,25 +103,3 @@ func FindUserByEmail(email string) (User, error) {
 	err := DB.Get(&u, q, email)
 	return u, err
 }
-
-// rows, err := db.Queryx(`SELECT * FROM users`)
-// if err != nil {
-// 	fmt.Println(err)
-// }
-// defer rows.Close()
-
-// for rows.Next() {
-// 	var u User
-// 	err = rows.StructScan(&u)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(u.ID, u.Email, u.CreatedAt.GoString())
-// }
-
-// var users []User
-// err = db.Select(&users, `SELECT * FROM users`)
-// if err != nil {
-// 	fmt.Println(err)
-// }
-// fmt.Println("users count: ", len(users))

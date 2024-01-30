@@ -2,6 +2,7 @@
 	// @ts-nocheck
 	import { onMount } from 'svelte';
 	import Card from './card.svelte';
+	import { log } from '$lib/logger';
 
 	// let cssVariables = [];
 	let latteVariables = [];
@@ -31,10 +32,10 @@
 				(sheet) => sheet.href === null || sheet.href.startsWith(window.location.origin)
 			)[sheetId].cssRules[0].style
 		).filter((name) => name.startsWith('--macchiato-'));
+		log.info(latteVariables, mochaVariables)
 
 		// const rs = getComputedStyle(document.querySelector(':root'))
 		// names.forEach(name => colors[name] = rs.getPropertyValue(name))
-		console.log(latteVariables, mochaVariables);
 	});
 </script>
 

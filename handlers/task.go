@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"pingoh/db"
 	"pingoh/services"
 	"slices"
@@ -32,7 +31,6 @@ func (tch *TaskChannel) Deactivate() {
 
 func (tch *TaskChannel) Publish(r *db.HttpResult) {
 	for i := 0; i < len(tch.Subs); i++ {
-		fmt.Println("publishing to", i)
 		go func(i int) { tch.Subs[i] <- r }(i)
 	}
 }
@@ -48,9 +46,7 @@ func (tch *TaskChannel) Subscribe() int {
 func (tch *TaskChannel) Unsubscribe(subID int) {
 	tch.mu.Lock()
 	defer tch.mu.Unlock()
-	fmt.Println("cmd stop", len(tch.Subs))
 	tch.Subs = append(tch.Subs[:subID], tch.Subs[subID+1:]...)
-	fmt.Println("hmm subs ln", len(tch.Subs))
 }
 
 type NewTask struct {
@@ -156,7 +152,7 @@ func StartTasks() {
 	log.Info().Msg("starting tasks")
 	tasks, err := db.GetAllActiveTasks()
 	if err != nil {
-		log.Error().Err(err).Msg("error fetching tasks from db")
+		log.Error().Err(err).Msg("failed fetching tasks from db")
 		return
 	}
 	for i := 0; i < len(tasks); i++ {
@@ -211,27 +207,27 @@ func startTask(t db.Task) {
 			return
 		case <-ticker.C:
 			if v, ok := TaskChannels[t.ID]; ok && v.Active {
-				log.Info().Msgf("rinning task: %v - %v", t.Name, t.ID)
+				log.Info().Msgf("running task: %v - %v", t.Name, t.ID)
 				switch t.Type {
 				case "http":
 					runHttpTask(&t)
 				}
-				if !t.Repeat {
+				if !t.Repeat || t.Interval == 0 {
 					return
 				}
 			} else {
-				log.Info().Msgf("task inactive! clearing from list: %v - %v", t.Name, t.ID)
-				v.Stop <- true
+				log.Info().Msgf("tried calling inactive task")
+				v.Deactivate()
+				return
 			}
 		}
 	}
 }
 
 func runHttpTask(task *db.Task) {
-	log.Info().Msgf("rensing http req: v - v")
 	t, err := db.GetHttpTaskByTaskID(task.ID)
 	if err != nil {
-		fmt.Println(err)
+		log.Error().Err(err).Msg("failed fetching task details from db")
 		return
 	}
 
@@ -253,7 +249,7 @@ func runHttpTask(task *db.Task) {
 		startTime := time.Now()
 		err = client.DoTimeout(req, res, time.Duration(t.Timeout*int(time.Second)))
 		if err != nil {
-			fmt.Println(err)
+			log.Error().Err(err).Msg("failed sending request")
 			return
 		}
 		success := slices.Contains(t.AcceptedStatusCodes, res.StatusCode())

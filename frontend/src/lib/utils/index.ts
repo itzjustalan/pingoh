@@ -1,5 +1,7 @@
 // export { HttpStatusCodes } from "./httpStatusCodes";
 
+import { log } from "$lib/logger";
+
 export const getCookieValue = (name: string, cookie: string | null) =>
 	cookie?.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || null;
 
@@ -97,9 +99,9 @@ export const deleteUndefinedKeys = <T extends object>(data: T): void =>
 export const copyToClipboard = (text: string) => {
 	if (navigator.clipboard) {
 		navigator.clipboard.writeText(text).then(function () {
-			console.log('Async: Copying to clipboard was successful!');
+			log.info('Async: Copying to clipboard was successful!')
 		}, function (err) {
-			console.error('Async: Could not copy text: ', err);
+			log.error('Async: Could not copy text: ', err)
 		});
 	} else {
 		var textArea = document.createElement("textarea");
@@ -117,13 +119,13 @@ export const copyToClipboard = (text: string) => {
 		try {
 			var successful = document.execCommand('copy');
 			var msg = successful ? 'successful' : 'unsuccessful';
-			console.log('Fallback: Copying text command was ' + msg);
+			log.info('Fallback: Copying text command was ' + msg);
 		} catch (err) {
-			console.error('Fallback: Oops, unable to copy', err);
+			log.error('Fallback: Oops, unable to copy', err);
 		}
 
 		document.body.removeChild(textArea);
 		return;
 	}
-	console.log(text)
+	log.info(text)
 }

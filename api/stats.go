@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"pingoh/handlers"
 	"strconv"
 
@@ -25,7 +24,6 @@ func addStatsRoutes(api *fiber.Router) {
 	})
 
 	r.Get("/ws/task/:task_id", websocket.New(func(c *websocket.Conn) {
-		fmt.Println("req rcvd")
 		tid, err := strconv.Atoi(c.Params("task_id", ""))
 		if err != nil {
 			c.Close()
@@ -37,25 +35,20 @@ func addStatsRoutes(api *fiber.Router) {
 		)
 		ch := make(chan string)
 		c.SetCloseHandler(func(code int, text string) error {
-			fmt.Println("cls hndlr", code, text)
 			ch <- "stop"
-			fmt.Println("sent stp")
 			c.Close()
 			return nil
 		})
 		for {
-			fmt.Println("ni aano??")
 			if mt, msg, err = c.ReadMessage(); err != nil {
 				c.WriteMessage(websocket.TextMessage, []byte("error reading command"))
 				c.Close()
 				return
 			}
-			fmt.Println("mtmsgerr", mt, msg, err)
 			switch mt {
 			case 1:
 				switch cmd := string(msg); cmd {
 				case "start":
-					fmt.Println("start 10")
 					res, err := handlers.HttpResultsByTaskID(tid)
 					if err != nil {
 						c.WriteMessage(websocket.TextMessage, []byte("error fetching results"))
@@ -66,7 +59,6 @@ func addStatsRoutes(api *fiber.Router) {
 					ch <- "stop"
 					return
 				default:
-					fmt.Println("undefined cmd: " + cmd)
 					c.WriteMessage(websocket.TextMessage, []byte("unknown command"))
 				}
 			default:
