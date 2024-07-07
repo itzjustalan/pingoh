@@ -1,9 +1,9 @@
-import type { UserModel } from "./models/db/user.model";
+import type { UserModel } from './models/db/user.model';
 
 export const UserRoles = {
 	Admin: 'admin',
 	Guest: 'guest',
-	User: 'user',
+	User: 'user'
 } as const;
 
 export type UserAccess = 'create_menu' | 'read_menu' | 'update_menu' | 'delete_menu';
@@ -24,45 +24,41 @@ export const accessRoutes: {
 	get: {
 		'/': {
 			roles: [UserRoles.Guest],
-			access: {},
+			access: {}
 		},
 		'/about': {
 			roles: [UserRoles.User],
-			access: {},
+			access: {}
 		},
 		'/auth/signin': {
 			roles: [UserRoles.Guest],
-			access: {},
+			access: {}
 		},
 		'/auth/signup': {
 			roles: [UserRoles.Guest],
-			access: {},
+			access: {}
 		},
 		'/dbg': {
 			roles: [UserRoles.Guest],
-			access: {},
+			access: {}
 		},
 		'/dbg/col': {
 			roles: [UserRoles.Guest],
-			access: {},
-		},
+			access: {}
+		}
 	},
 	post: {},
 	put: {},
-	delete: {},
+	delete: {}
 };
 
 class UserAccessController {
-	authorize(
-		user: undefined | UserModel,
-		url: string,
-		method: string
-	): Error | undefined {
+	authorize(user: undefined | UserModel, url: string, method: string): Error | undefined {
 		const route = this._pick_route(method, url);
-		if (route === undefined) return new Error("undefined");
+		if (route === undefined) return new Error('undefined');
 		if (route.roles.find((e) => e === UserRoles.Guest || e === user?.role)) return;
 		// if (this._has_access_to_route(user?.access ?? [], route)) return;
-		return new Error("unauthorized");
+		return new Error('unauthorized');
 	}
 
 	_has_access_to_route(accesses: string[], route: AccessRoute): Boolean {

@@ -11,7 +11,7 @@
 	let macchiatoVariables = [];
 
 	onMount(() => {
-    const sheetId = 0;
+		const sheetId = 0;
 		latteVariables = Array.from(
 			Array.from(document.styleSheets).filter(
 				(sheet) => sheet.href === null || sheet.href.startsWith(window.location.origin)
@@ -32,7 +32,7 @@
 				(sheet) => sheet.href === null || sheet.href.startsWith(window.location.origin)
 			)[sheetId].cssRules[0].style
 		).filter((name) => name.startsWith('--macchiato-'));
-		log.info(latteVariables, mochaVariables)
+		log.info(latteVariables, mochaVariables);
 
 		// const rs = getComputedStyle(document.querySelector(':root'))
 		// names.forEach(name => colors[name] = rs.getPropertyValue(name))
@@ -65,18 +65,17 @@
 	</div>
 </div>
 
-
 <style>
 	.page {
-    width: 600px;
+		width: 600px;
 		color: cadetblue;
-    display: flex;
-    justify-content: space-between;
+		display: flex;
+		justify-content: space-between;
 	}
-  .divider {
-    width: 100vw;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border: 1px dashed black;
-  }
+	.divider {
+		width: 100vw;
+		margin-top: 20px;
+		margin-bottom: 20px;
+		border: 1px dashed black;
+	}
 </style>

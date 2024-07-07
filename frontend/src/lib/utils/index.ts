@@ -1,6 +1,6 @@
 // export { HttpStatusCodes } from "./httpStatusCodes";
 
-import { log } from "$lib/logger";
+import { log } from '$lib/logger';
 
 export const getCookieValue = (name: string, cookie: string | null) =>
 	cookie?.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || null;
@@ -98,19 +98,22 @@ export const deleteUndefinedKeys = <T extends object>(data: T): void =>
 
 export const copyToClipboard = (text: string) => {
 	if (navigator.clipboard) {
-		navigator.clipboard.writeText(text).then(function () {
-			log.info('Async: Copying to clipboard was successful!')
-		}, function (err) {
-			log.error('Async: Could not copy text: ', err)
-		});
+		navigator.clipboard.writeText(text).then(
+			function () {
+				log.info('Async: Copying to clipboard was successful!');
+			},
+			function (err) {
+				log.error('Async: Could not copy text: ', err);
+			}
+		);
 	} else {
-		var textArea = document.createElement("textarea");
+		var textArea = document.createElement('textarea');
 		textArea.value = text;
 
 		// Avoid scrolling to bottom
-		textArea.style.top = "0";
-		textArea.style.left = "0";
-		textArea.style.position = "fixed";
+		textArea.style.top = '0';
+		textArea.style.left = '0';
+		textArea.style.position = 'fixed';
 
 		document.body.appendChild(textArea);
 		textArea.focus();
@@ -127,5 +130,5 @@ export const copyToClipboard = (text: string) => {
 		document.body.removeChild(textArea);
 		return;
 	}
-	log.info(text)
-}
+	log.info(text);
+};

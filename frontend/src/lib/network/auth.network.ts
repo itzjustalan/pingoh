@@ -34,7 +34,7 @@ class AuthNetwork {
 
 	refresh = async (): Promise<AuthedUser> => {
 		const response = await backendApi.post<AuthedUser>('/auth/refresh', {
-			token: get(authedUser)?.refresh_token,
+			token: get(authedUser)?.refresh_token
 		});
 		this._autoRefresh(response.data.access_token);
 		authedUser.updateTokens(response.data);

@@ -6,13 +6,13 @@ import { get } from 'svelte/store';
 export { type AxiosInstance } from 'axios';
 
 const backendApi: AxiosInstance = axios.create({
-	baseURL: "http://localhost:3000/api",
+	baseURL: 'http://localhost:3000/api'
 });
 
 backendApi.defaults.headers.common['Content-Type'] = 'application/json';
 backendApi.interceptors.request.use(
 	(config) => {
-  		config.headers.Authorization = 'b ' + get(authedUser)?.access_token;
+		config.headers.Authorization = 'b ' + get(authedUser)?.access_token;
 		log.cl_req(config.method ?? '-', config.url ?? '-', config.data);
 		return config;
 	},

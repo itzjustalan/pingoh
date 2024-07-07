@@ -1,36 +1,36 @@
 body {
-    color: var(--col-text);
-    background-color: var(--col-base);
+	color: var(--col-text);
+	background-color: var(--col-base);
 }
 
 a {
-    color: var(--col-sapphire);
+	color: var(--col-sapphire);
 }
 a:visited {
-    color: var(--col-teal);
+	color: var(--col-teal);
 }
 
 button::-moz-focus-inner,
 input::-moz-focus-inner {
-  border: 0;
-  padding: 0;
+	border: 0;
+	padding: 0;
 }
 
 button {
-     padding: 1px 5px;
-    border-radius: 6px; 
-    color: var(--latte-mantle);
-    background-color: var(--latte-lavender);
+	padding: 1px 5px;
+	border-radius: 6px;
+	color: var(--latte-mantle);
+	background-color: var(--latte-lavender);
 }
 
 button:active {
-    border: none;
+	border: none;
 }
 
 input {
-    /* padding: 1px 5px;
+	/* padding: 1px 5px;
     border: none;
     border-radius: 6px; */
-    color: var(--latte-mantle);
-    background-color: var(--latte-lavender);
+	color: var(--latte-mantle);
+	background-color: var(--latte-lavender);
 }

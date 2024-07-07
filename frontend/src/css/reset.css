@@ -3,19 +3,87 @@
    License: none (public domain)
 */
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -24,21 +92,34 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
 	display: block;
 }
 body {
 	line-height: 1;
 }
-ol, ul {
+ol,
+ul {
 	list-style: none;
 }
-blockquote, q {
+blockquote,
+q {
 	quotes: none;
 }
-blockquote:before, blockquote:after,
-q:before, q:after {
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
 	content: '';
 	content: none;
 }
@@ -52,14 +133,16 @@ table {
 /*
   1. Use a more-intuitive box-sizing model.
 */
-*, *::before, *::after {
-  box-sizing: border-box;
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }
 /*
   2. Remove default margin
 */
 * {
-  margin: 0;
+	margin: 0;
 }
 /*
   Typographic tweaks!
@@ -67,33 +150,47 @@ table {
   4. Improve text rendering
 */
 body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
 }
 /*
   5. Improve media defaults
 */
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
 }
 /*
   6. Remove built-in form typography styles
 */
-input, button, textarea, select {
-  font: inherit;
+input,
+button,
+textarea,
+select {
+	font: inherit;
 }
 /*
   7. Avoid text overflows
 */
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
 }
 /*
   8. Create a root stacking context
 */
-#root, #__next {
-  isolation: isolate;
+#root,
+#__next {
+	isolation: isolate;
 }
 
 /* ----------------------------------------------------------------------------------------------------
@@ -113,28 +210,26 @@ input,
 label,
 select,
 button,
-textarea
-{
-	margin:0;
-	border:0;
-	padding:0;
-	display:inline-block;
-	vertical-align:middle;
-	white-space:normal;
-	background:none;
-	line-height:1;
-	
+textarea {
+	margin: 0;
+	border: 0;
+	padding: 0;
+	display: inline-block;
+	vertical-align: middle;
+	white-space: normal;
+	background: none;
+	line-height: 1;
+
 	/* Browsers have different default form fonts */
-	font-size:13px;
-	font-family:Arial;
+	font-size: 13px;
+	font-family: Arial;
 }
 
 /* Remove the stupid outer glow in Webkit */
 input:focus,
 select:focus,
-button:focus
-{
-  border: 1px solid blue;
+button:focus {
+	border: 1px solid blue;
 }
 
 /* Box Sizing Reset
@@ -142,61 +237,57 @@ button:focus
 
 /* All of our custom controls should be what we expect them to be */
 input,
-textarea
-{
-  -webkit-appearance: none;
-	-webkit-box-sizing:content-box;
-	-moz-box-sizing:content-box;
-	box-sizing:content-box;
-  appearance: none;
+textarea {
+	-webkit-appearance: none;
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	appearance: none;
 }
 
 /* These elements are usually rendered a certain way by the browser */
 button,
-input[type=reset],
-input[type=button],
-input[type=submit],
-input[type=checkbox],
-input[type=radio],
-select
-{
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
-  border: none;
+input[type='reset'],
+input[type='button'],
+input[type='submit'],
+input[type='checkbox'],
+input[type='radio'],
+select {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: none;
 }
 
 /* Text Inputs
 -----------------------------------------------*/
 
-input[type=date],
-input[type=datetime],
-input[type=datetime-local],
-input[type=email],
-input[type=month],
-input[type=number],
-input[type=password],
-input[type=range],
-input[type=search],
-input[type=tel],
-input[type=text],
-input[type=time],
-input[type=url],
-input[type=week]
-{
-    padding: 1px 5px;
-    border: none;
-    border-radius: 6px;
+input[type='date'],
+input[type='datetime'],
+input[type='datetime-local'],
+input[type='email'],
+input[type='month'],
+input[type='number'],
+input[type='password'],
+input[type='range'],
+input[type='search'],
+input[type='tel'],
+input[type='text'],
+input[type='time'],
+input[type='url'],
+input[type='week'] {
+	padding: 1px 5px;
+	border: none;
+	border-radius: 6px;
 }
 
 /* Button Controls
 -----------------------------------------------*/
 
-input[type=checkbox],
-input[type=radio]
-{
-	width:13px;
-	height:13px;
+input[type='checkbox'],
+input[type='radio'] {
+	width: 13px;
+	height: 13px;
 }
 
 /* File Uploads
@@ -211,51 +302,46 @@ input[type=radio]
 -----------------------------------------------*/
 
 /* Make webkit render the search input like a normal text field */
-input[type=search]
-{
-	-webkit-appearance:textfield;
-	-webkit-box-sizing:content-box;
-  appearance: textfield;
-  box-sizing: content-box;
+input[type='search'] {
+	-webkit-appearance: textfield;
+	-webkit-box-sizing: content-box;
+	appearance: textfield;
+	box-sizing: content-box;
 }
 
 /* Turn off the recent search for webkit. It adds about 15px padding on the left */
-::-webkit-search-decoration
-{
-	display:none;
+::-webkit-search-decoration {
+	display: none;
 }
 
 /* Buttons
 -----------------------------------------------*/
 
 button,
-input[type="reset"],
-input[type="button"],
-input[type="submit"]
-{
+input[type='reset'],
+input[type='button'],
+input[type='submit'] {
 	/* Fix IE7 display bug */
-	overflow:visible;
-	width:auto;
+	overflow: visible;
+	width: auto;
 }
 
 /* IE8 and FF freak out if this rule is within another selector */
-::-webkit-file-upload-button
-{	
-	padding:0;
-	border:0;
-	background:none;
+::-webkit-file-upload-button {
+	padding: 0;
+	border: 0;
+	background: none;
 }
 
 /* Textarea
 -----------------------------------------------*/
 
-textarea 
-{
+textarea {
 	/* Move the label to the top */
-	vertical-align:top;
-	
+	vertical-align: top;
+
 	/* Turn off scroll bars in IE unless needed */
-	overflow:auto;
+	overflow: auto;
 }
 
 /* Selects
@@ -266,8 +352,7 @@ textarea
 
 } */
 
-select[multiple] 
-{
+select[multiple] {
 	/* Move the label to the top */
-	vertical-align:top;
+	vertical-align: top;
 }

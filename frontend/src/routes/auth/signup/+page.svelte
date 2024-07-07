@@ -13,8 +13,8 @@
 		mutationKey: ['signup'],
 		mutationFn: authNetwork.signup,
 		onSuccess(data, variables, context) {
-			goto("/")
-        },
+			goto('/');
+		}
 	});
 	const handleSignup = (e: Event) => {
 		e.preventDefault();
@@ -26,9 +26,7 @@
 <!-- <pre>{JSON.stringify(data)}</pre>
 <pre>{JSON.stringify(form)}</pre> -->
 
-<div class="title">
-Signup
-</div>
+<div class="title">Signup</div>
 
 {#if $signup.isPending}
 	loading...
@@ -44,10 +42,11 @@ Signup
 	<pre>{JSON.stringify($signup.error)}</pre>
 {/if}
 
-<br>
-<input type="text" name="username" bind:value={email} required /> usernamE <br>
-<input type="password" name="password" bind:value={passw} required /> passworD <br>
-<button disabled={$signup.isPending} on:click={handleSignup}>Submit</button> this is a - signUP <br>
+<br />
+<input type="text" name="username" bind:value={email} required /> usernamE <br />
+<input type="password" name="password" bind:value={passw} required /> passworD <br />
+<button disabled={$signup.isPending} on:click={handleSignup}>Submit</button> this is a - signUP
+<br />
 have an account? <a href="/auth/signin">signIN</a>
 
 <style>

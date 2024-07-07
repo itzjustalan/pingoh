@@ -5,7 +5,7 @@ export type AuthInput = z.infer<typeof authInputSchema>;
 export const authInputSchema = z
 	.object({
 		email: z.string().max(255).email(),
-		passw: z.string().min(2).max(255),
+		passw: z.string().min(2).max(255)
 	})
 	.strict();
 
@@ -14,6 +14,6 @@ export const userInputSchema = userModelSchema
 	.omit({
 		id: true,
 		createdAt: true,
-		updatedAt: true,
+		updatedAt: true
 	})
 	.strict();
