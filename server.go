@@ -31,9 +31,9 @@ func main() {
 	app := fiber.New()
 	handlers.StartTasks()
 
+	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(recover.New())
-	app.Use(cors.New())
 
 	api.AddRoutes(app)
 

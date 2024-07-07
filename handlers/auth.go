@@ -11,8 +11,8 @@ import (
 )
 
 type AuthCredentials struct {
-	Email string `json:"email" xml:"email" form:"email"`
-	Passw string `json:"passw" xml:"passw" form:"passw"`
+  Email string `json:"email" xml:"email" form:"email" validate:"required,email"`
+	Passw string `json:"passw" xml:"passw" form:"passw" validate:"required,min=8,max=50"`
 }
 
 type AuthenticatedUser struct {
@@ -22,6 +22,8 @@ type AuthenticatedUser struct {
 
 func Signup(creds *AuthCredentials) (AuthenticatedUser, error) {
 	var u AuthenticatedUser
+
+  // limit password length to avoid bcrypt limitation
 	if len(creds.Passw) > 50 {
 		return u, fiber.NewError(
 			fiber.ErrBadRequest.Code,

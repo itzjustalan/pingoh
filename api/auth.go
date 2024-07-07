@@ -37,6 +37,10 @@ func addAuthRoutes(api *fiber.Router) {
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
+		err := handlers.Validator.Struct(&b)
+		if err != nil {
+			return err
+		}
 		u, err := handlers.Signup(&b)
 		if err != nil {
 			return err
@@ -48,6 +52,10 @@ func addAuthRoutes(api *fiber.Router) {
 		var b handlers.AuthCredentials
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
+		}
+		err := handlers.Validator.Struct(&b)
+		if err != nil {
+			return err
 		}
 		u, err := handlers.Signin(&b)
 		if err != nil {
