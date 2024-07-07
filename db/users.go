@@ -5,8 +5,10 @@ import (
 	"time"
 )
 
-type UserRole string
-type UserAccess []string
+type (
+	UserRole   string
+	UserAccess []string
+)
 
 const (
 	UserRoleAdmin UserRole = "admin"
@@ -16,6 +18,7 @@ const (
 type User struct {
 	ID int `json:"-"`
 	// UID       string     `json:"uid"`
+	Name      string     `json:"name"`
 	Email     string     `json:"email"`
 	PwHash    string     `json:"-" db:"pw_hash"`
 	Role      UserRole   `json:"role"`
@@ -32,13 +35,13 @@ func (v *UserAccess) Scan(src interface{}) error {
 }
 
 func createUsersTable() error {
-
 	// uid TEXT UNIQUE NOT NULL,
 	// name VARCHAR(255) NOT NULL,
 	// email VARCHAR(255) UNIQUE NOT NULL,
 	q := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
 		email TEXT UNIQUE NOT NULL,
 		pw_hash TEXT NOT NULL,
 		role TEXT NOT NULL DEFAULT 'user' CHECK ( role IN ('admin','user') ),
@@ -70,7 +73,7 @@ func potentialAdmin() (UserRole, error) {
 
 func CreateUser(u *User) (int64, error) {
 	q := `
-	INSERT INTO users (email, pw_hash, role) VALUES (?, ?, ?)
+	INSERT INTO users (name, email, pw_hash, role) VALUES (?, ?, ?, ?)
 	`
 	if u.Role == "" {
 		role, err := potentialAdmin()
@@ -79,7 +82,7 @@ func CreateUser(u *User) (int64, error) {
 		}
 		u.Role = role
 	}
-	res, err := DB.Exec(q, u.Email, u.PwHash, u.Role)
+	res, err := DB.Exec(q, u.Name, u.Email, u.PwHash, u.Role)
 	if err != nil {
 		return 0, err
 	}

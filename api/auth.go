@@ -33,7 +33,7 @@ func addAuthRoutes(api *fiber.Router) {
 	auth := (*api).Group("/auth")
 
 	auth.Post("/signup", func(c *fiber.Ctx) error {
-		var b handlers.AuthCredentials
+		var b handlers.SignupCredentials
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
@@ -49,7 +49,7 @@ func addAuthRoutes(api *fiber.Router) {
 	})
 
 	auth.Post("/signin", func(c *fiber.Ctx) error {
-		var b handlers.AuthCredentials
+		var b handlers.SigninCredentials
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}

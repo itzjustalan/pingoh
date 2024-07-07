@@ -7,9 +7,9 @@ import (
 )
 
 func addTaskRoutes(api *fiber.Router) {
-	r := (*api).Group("/task")
+	r := (*api).Group("/tasks")
 
-	r.Post("/new", func(c *fiber.Ctx) error {
+	r.Post("/", func(c *fiber.Ctx) error {
 		var b handlers.NewTask
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
@@ -25,7 +25,7 @@ func addTaskRoutes(api *fiber.Router) {
 		return nil
 	})
 
-	r.Get("/activate/:task_id", func(c *fiber.Ctx) error {
+	r.Get("/:task_id/activate", func(c *fiber.Ctx) error {
 		id, err := c.ParamsInt("task_id")
 		if err != nil {
 			return err
@@ -33,7 +33,7 @@ func addTaskRoutes(api *fiber.Router) {
 		return handlers.ActivateTaskByID(id)
 	})
 
-	r.Get("/deactivate/:task_id", func(c *fiber.Ctx) error {
+	r.Get("/:task_id/deactivate", func(c *fiber.Ctx) error {
 		id, err := c.ParamsInt("task_id")
 		if err != nil {
 			return err

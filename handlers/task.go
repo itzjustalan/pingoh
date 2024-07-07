@@ -51,34 +51,34 @@ func (tch *TaskChannel) Unsubscribe(subID int) {
 
 type NewTask struct {
 	Name        string   `json:"name" validate:"required"`
-	Type        string   `json:"type" validate:"required,eq=http"`
-	Repeat      bool     `json:"repeat" validate:"required,boolean"`
-	Active      bool     `json:"active" validate:"required,boolean"`
+	Type        string   `json:"type" validate:"required,oneof=http ws"`
+	Repeat      bool     `json:"repeat" validate:""`
+	Active      bool     `json:"active" validate:""`
 	Interval    int      `json:"interval" validate:"required,gte=1"`
-	Description string   `json:"description" validate:"required,omitempty"`
-	Tags        []string `json:"tags" validate:"required,dive,unique"`
+	Description string   `json:"description" validate:"required"`
+	Tags        []string `json:"tags" validate:"required,unique"`
 	Http        struct {
 		Method              string            `json:"method" validate:"required,oneof=get post put patch delete head options"`
 		URL                 string            `json:"url" validate:"required,url"`
-		Body                string            `json:"body"`
-		Headers             map[string]string `json:"headers" validate:"required"`
+		Body                string            `json:"body" validate:""`
+		Headers             map[string]string `json:"headers" validate:""`
 		Encoding            string            `json:"encoding" validate:"required,oneof=none text html form json xml"`
 		Retries             int               `json:"retries" validate:"gte=0"`
-		Timeout             int               `json:"timeout" validate:"gte=0"`
+		Timeout             int               `json:"timeout" validate:"required,gte=0"`
 		AcceptedStatusCodes []int             `json:"accepted_status_codes" validate:"required,unique,dive,number"`
 		AuthMethod          string            `json:"auth_method" validate:"required,oneof=none basic oauth2"`
 		BasicAuth           struct {
 			Username string `json:"username" validate:"required"`
 			Password string `json:"password" validate:"required"`
-		} `json:"basic_auth" validate:"required_if=AuthMethod basic"`
+		} `json:"basic_auth" validate:"required_if=AuthMethod basic,omitempty"`
 		OAuth2 struct {
 			OauthMethod       string `json:"oauth_method" validate:"required"`
 			OauthUrl          string `json:"oauth_url" validate:"required,url"`
 			OauthClientID     string `json:"oauth_client_id" validate:"required"`
 			OauthClientSecret string `json:"oauth_client_secret" validate:"required"`
 			OauthClientScope  string `json:"oauth_client_scope" validate:"required"`
-		} `json:"oauth2" validate:"required_if=AuthMethod oauth2"`
-	} `json:"http" validate:"required_if=Method http"`
+		} `json:"oauth2" validate:"required_if=AuthMethod oauth2,omitempty"`
+	} `json:"http" validate:"required_if=Type http,omitempty"`
 }
 
 func CreateNewTask(t *NewTask) error {

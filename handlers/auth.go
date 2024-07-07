@@ -10,8 +10,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthCredentials struct {
-  Email string `json:"email" xml:"email" form:"email" validate:"required,email"`
+type SignupCredentials struct {
+	Name  string `json:"name" xml:"name" form:"name" validate:"required"`
+	Email string `json:"email" xml:"email" form:"email" validate:"required,email"`
+	Passw string `json:"passw" xml:"passw" form:"passw" validate:"required,min=8,max=50"`
+}
+
+type SigninCredentials struct {
+	Email string `json:"email" xml:"email" form:"email" validate:"required,email"`
 	Passw string `json:"passw" xml:"passw" form:"passw" validate:"required,min=8,max=50"`
 }
 
@@ -20,10 +26,10 @@ type AuthenticatedUser struct {
 	services.JwtTokens
 }
 
-func Signup(creds *AuthCredentials) (AuthenticatedUser, error) {
+func Signup(creds *SignupCredentials) (AuthenticatedUser, error) {
 	var u AuthenticatedUser
 
-  // limit password length to avoid bcrypt limitation
+	// limit password length to avoid bcrypt limitation
 	if len(creds.Passw) > 50 {
 		return u, fiber.NewError(
 			fiber.ErrBadRequest.Code,
@@ -35,7 +41,7 @@ func Signup(creds *AuthCredentials) (AuthenticatedUser, error) {
 	if err != nil {
 		return u, err
 	}
-	_, err = db.CreateUser(&db.User{Email: creds.Email, PwHash: string(hash)})
+	_, err = db.CreateUser(&db.User{Name: creds.Name, Email: creds.Email, PwHash: string(hash)})
 	if err != nil {
 		return u, err
 	}
@@ -52,7 +58,7 @@ func Signup(creds *AuthCredentials) (AuthenticatedUser, error) {
 	return u, nil
 }
 
-func Signin(creds *AuthCredentials) (AuthenticatedUser, error) {
+func Signin(creds *SigninCredentials) (AuthenticatedUser, error) {
 	var u AuthenticatedUser
 	user, err := db.FindUserByEmail(creds.Email)
 	if err != nil {
