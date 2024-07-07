@@ -4,6 +4,7 @@ import (
 	"pingoh/handlers"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/zerolog/log"
 )
 
 func addTaskRoutes(api *fiber.Router) {
@@ -30,6 +31,7 @@ func addTaskRoutes(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
+    log.Info().Msgf("Activating task with ID: %d", id)
 		return handlers.ActivateTaskByID(id)
 	})
 
@@ -38,6 +40,7 @@ func addTaskRoutes(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
+    log.Info().Msgf("Deactivating task with ID: %d", id)
 		return handlers.DeactivateTaskByID(id)
 	})
 }

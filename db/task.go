@@ -87,13 +87,13 @@ const (
 )
 
 const (
-	HttpTaskMethodGet     HttpTaskMethod = "get"
-	HttpTaskMethodPost    HttpTaskMethod = "post"
-	HttpTaskMethodPut     HttpTaskMethod = "put"
-	HttpTaskMethodPatch   HttpTaskMethod = "patch"
-	HttpTaskMethodDelete  HttpTaskMethod = "delete"
-	HttpTaskMethodHead    HttpTaskMethod = "head"
-	HttpTaskMethodOptions HttpTaskMethod = "options"
+	HttpTaskMethodGet     HttpTaskMethod = "GET"
+	HttpTaskMethodPost    HttpTaskMethod = "POST"
+	HttpTaskMethodPut     HttpTaskMethod = "PUT"
+	HttpTaskMethodPatch   HttpTaskMethod = "PATCH"
+	HttpTaskMethodDelete  HttpTaskMethod = "DELETE"
+	HttpTaskMethodHead    HttpTaskMethod = "HEAD"
+	HttpTaskMethodOptions HttpTaskMethod = "OPTIONS"
 )
 const (
 	HttpOAuth2AuthMethodHeader HttpOAuth2AuthMethod = "header"
@@ -138,14 +138,14 @@ func createHttpTasksTable() error {
 	CREATE TABLE IF NOT EXISTS http_tasks (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		task_id INTEGER NOT NULL,
-		method TEXT NOT NULL DEFAULT 'get' CHECK ( method IN (
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options'
+		method TEXT NOT NULL DEFAULT 'GET' CHECK ( method IN (
+			'GET',
+			'POST',
+			'PUT',
+			'PATCH',
+			'DELETE',
+			'HEAD',
+			'OPTIONS'
 		) ),
 		url TEXT NOT NULL,
 		body  TEXT NOT NULL DEFAULT "",

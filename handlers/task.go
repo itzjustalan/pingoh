@@ -52,13 +52,13 @@ func (tch *TaskChannel) Unsubscribe(subID int) {
 type NewTask struct {
 	Name        string   `json:"name" validate:"required"`
 	Type        string   `json:"type" validate:"required,oneof=http ws"`
-	Repeat      bool     `json:"repeat" validate:""`
-	Active      bool     `json:"active" validate:""`
+	Repeat      bool     `json:"repeat" validate:"required"`
+	Active      bool     `json:"active" validate:"required"`
 	Interval    int      `json:"interval" validate:"required,gte=1"`
 	Description string   `json:"description" validate:"required"`
 	Tags        []string `json:"tags" validate:"required,unique"`
 	Http        struct {
-		Method              string            `json:"method" validate:"required,oneof=get post put patch delete head options"`
+		Method              string            `json:"method" validate:"required,oneof=GET POST PUT PATCH DELETE HEAD OPTIONS"`
 		URL                 string            `json:"url" validate:"required,url"`
 		Body                string            `json:"body" validate:""`
 		Headers             map[string]string `json:"headers" validate:""`
@@ -185,7 +185,7 @@ func DeactivateTaskByID(tid int) error {
 }
 
 func startTask(t db.Task) {
-	log.Info().Msgf("starting task: %v - %v", t.Name, t.ID)
+	log.Info().Msgf("starting task: %v - %v", t.ID, t.Name)
 	ticker := time.NewTicker(time.Second * time.Duration(t.Interval))
 	defer ticker.Stop()
 	if v, ok := TaskChannels[t.ID]; ok {
@@ -201,14 +201,14 @@ func startTask(t db.Task) {
 	for {
 		select {
 		case <-TaskChannels[t.ID].Stop:
-			log.Info().Msgf("stopping task: %v - %v", t.Name, t.ID)
+			log.Info().Msgf("stopping task: %v - %v", t.ID, t.Name)
 			if v, ok := TaskChannels[t.ID]; ok {
 				v.Active = false
 			}
 			return
 		case <-ticker.C:
 			if v, ok := TaskChannels[t.ID]; ok && v.Active {
-				log.Info().Msgf("running task: %v - %v", t.Name, t.ID)
+				log.Info().Msgf("running task: %v - %v", t.ID, t.Name)
 				switch t.Type {
 				case "http":
 					runHttpTask(&t)
@@ -232,7 +232,7 @@ func runHttpTask(task *db.Task) {
 		return
 	}
 
-	client := fasthttp.Client{}
+	client := &fasthttp.Client{}
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 	req.SetRequestURI(t.Url)
@@ -263,6 +263,7 @@ func runHttpTask(task *db.Task) {
 			}
 			TaskChannels[task.ID].Publish(&result)
 			db.AddHttpResult(&result)
+			log.Info().Msgf("task: %v - %v, result: %v", task.ID, task.Name, result.Code)
 			break
 		}
 	}
