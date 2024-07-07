@@ -1,4 +1,5 @@
 <script lang="ts">
+	import backendApi from '$lib/network/apis/backend';
 	import { authNetwork } from '$lib/network/auth.network';
 	import { authedUser } from '$lib/stores/auth';
 
@@ -6,15 +7,21 @@
 
 	const getVersion = async () => {
 		const url = apiUrl('/hc');
-		const res = await fetch(url);
-		if (!res.ok) {
+		// const res = await fetch(url);
+		// if (!res.ok) {
+		// 	throw `Error while fetching data from ${url} (${res.status} ${res.statusText}).`;
+		// }
+		// return await res.text();
+		const res = await backendApi.get(url);
+		if (res.status !== 200) {
 			throw `Error while fetching data from ${url} (${res.status} ${res.statusText}).`;
 		}
-		return await res.text();
+		return res.data;
 	};
 </script>
 
 <h1>Home</h1>
+Welcome {authedUser.get()?.name},<br />
 {#await getVersion()}
 	loading...
 {:then version}

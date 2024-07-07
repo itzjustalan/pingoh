@@ -4,9 +4,10 @@
 	import { createMutation } from '@tanstack/svelte-query';
 	import axios from 'axios';
 
+	let name: string;
 	let email: string;
 	let passw: string;
-	// let password2: string;
+	let pass2: string;
 
 	// const signup = createMutation<any, AxiosError>({
 	const signup = createMutation({
@@ -18,8 +19,8 @@
 	});
 	const handleSignup = (e: Event) => {
 		e.preventDefault();
-		// if (password !== password2) alert(' passwords do not match!!');
-		$signup.mutate({ email, passw });
+		if (passw !== pass2) alert(' passwords do not match!!');
+		$signup.mutate({ name, email, passw });
 	};
 </script>
 
@@ -43,8 +44,10 @@
 {/if}
 
 <br />
+<input type="text" name="name" bind:value={name} required /> namE<br />
 <input type="text" name="username" bind:value={email} required /> usernamE <br />
 <input type="password" name="password" bind:value={passw} required /> passworD <br />
+<input type="password" name="password2" bind:value={pass2} required /> passworD <br />
 <button disabled={$signup.isPending} on:click={handleSignup}>Submit</button> this is a - signUP
 <br />
 have an account? <a href="/auth/signin">signIN</a>

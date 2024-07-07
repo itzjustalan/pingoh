@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { beforeNavigate, goto } from '$app/navigation';
+	import { beforeNavigate } from '$app/navigation';
 	import { authedUser } from '$lib/stores/auth';
 	import { uacController } from '$lib/user.access.controller';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';

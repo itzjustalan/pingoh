@@ -23,7 +23,7 @@ export const accessRoutes: {
 } = {
 	get: {
 		'/': {
-			roles: [UserRoles.Guest],
+			roles: [UserRoles.User],
 			access: {}
 		},
 		'/about': {
@@ -56,12 +56,18 @@ class UserAccessController {
 	authorize(user: undefined | UserModel, url: string, method: string): Error | undefined {
 		const route = this._pick_route(method, url);
 		if (route === undefined) return new Error('undefined');
-		if (route.roles.find((e) => e === UserRoles.Guest || e === user?.role)) return;
+		// allow all guest routes or allow is user role is admin or allow is user has route role
+		if (
+			route.roles.find(
+				(e) => e === UserRoles.Guest || user?.role === UserRoles.Admin || e === user?.role
+			)
+		)
+			return;
 		// if (this._has_access_to_route(user?.access ?? [], route)) return;
 		return new Error('unauthorized');
 	}
 
-	_has_access_to_route(accesses: string[], route: AccessRoute): Boolean {
+	_has_access_to_route(accesses: string[], route: AccessRoute): boolean {
 		for (let i = 0; i < accesses.length; i++) {
 			if (route.access[accesses[i] as keyof AccessRoute['access']]) {
 				return true;

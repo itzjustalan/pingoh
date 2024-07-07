@@ -14,11 +14,14 @@ export const trailingSlash = 'always';
 
 export async function load(input) {
 	// handle direct links
-	if (browser && uacController.authorize(authedUser.get(), input.route.id ?? '', 'get')) {
-		if (authedUser.authorized()) {
-			goto('/');
-		} else {
-			goto('/signin');
+	if (browser) {
+		const error = uacController.authorize(authedUser.get(), input.route.id ?? '', 'get');
+		if (error) {
+			if (authedUser.authorized()) {
+				goto('/');
+			} else {
+				goto('/auth/signin');
+			}
 		}
 	}
 	return {};

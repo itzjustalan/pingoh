@@ -9,7 +9,7 @@
 	const signin = createMutation({
 		mutationKey: ['signin'],
 		mutationFn: authNetwork.signin,
-		onSuccess(data, variables, context) {
+		onSuccess(_data, _variables, _context) {
 			goto('/');
 		}
 	});

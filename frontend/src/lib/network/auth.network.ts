@@ -1,4 +1,9 @@
-import { type AuthInput, authInputSchema } from '$lib/models/input/user';
+import {
+	type SignupInput,
+	type SigninInput,
+	signupInputSchema,
+	signinInputSchema
+} from '$lib/models/input/user';
 import backendApi from './apis/backend';
 import { decodeJwt } from '$lib/utils';
 import { authedUser, type AuthedUser } from '$lib/stores/auth';
@@ -16,16 +21,16 @@ class AuthNetwork {
 		authedUser.clear();
 	};
 
-	signup = async (data: AuthInput): Promise<AuthedUser> => {
-		authInputSchema.parse(data);
+	signup = async (data: SignupInput): Promise<AuthedUser> => {
+		signupInputSchema.parse(data);
 		const res = await backendApi.post<AuthedUser>('/auth/signup', data);
 		this._autoRefresh(res.data.access_token);
 		authedUser.set(res.data);
 		return res.data;
 	};
 
-	signin = async (data: AuthInput): Promise<AuthedUser> => {
-		authInputSchema.parse(data);
+	signin = async (data: SigninInput): Promise<AuthedUser> => {
+		signinInputSchema.parse(data);
 		const res = await backendApi.post<AuthedUser>('/auth/signin', data);
 		this._autoRefresh(res.data.access_token);
 		authedUser.set(res.data);

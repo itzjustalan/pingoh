@@ -12,7 +12,7 @@ const backendApi: AxiosInstance = axios.create({
 backendApi.defaults.headers.common['Content-Type'] = 'application/json';
 backendApi.interceptors.request.use(
 	(config) => {
-		config.headers.Authorization = 'b ' + get(authedUser)?.access_token;
+		config.headers.Authorization = 'Bearer ' + get(authedUser)?.access_token;
 		log.cl_req(config.method ?? '-', config.url ?? '-', config.data);
 		return config;
 	},

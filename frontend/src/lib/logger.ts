@@ -65,7 +65,7 @@ export const log = {
 	},
 	cl_res: (status: number, statusText: string, method: string, path: string, data: unknown) => {
 		if (skiplog(LogLevel.info)) return;
-		console.info(`[:${status}]  ${method.toUpperCase()} ${path} ${statusText}`, data);
+		console.info(`👉 [:${status}]  ${method.toUpperCase()} ${path} ${statusText}`, data);
 	},
 	cl_nav: (url: string, result: string, ...d: any[]) => {
 		if (skiplog(LogLevel.info)) return;
