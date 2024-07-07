@@ -6,7 +6,7 @@ import (
 )
 
 type Task struct {
-	ID          int       `json:"-"`
+	ID int `json:"-"`
 	// UID         string    `json:"uid"`
 	Name        string    `json:"name"`
 	Active      bool      `json:"active"`

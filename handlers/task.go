@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"pingoh/db"
-	"pingoh/services"
 	"slices"
-
 	"sync"
 	"time"
+
+	"pingoh/db"
+	"pingoh/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"

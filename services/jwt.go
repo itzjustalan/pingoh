@@ -2,14 +2,15 @@ package services
 
 import (
 	"errors"
-	"pingoh/db"
 	"time"
+
+	"pingoh/db"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type UserClaims struct {
-	ID     int        `json:"id"`
+	ID     int           `json:"id"`
 	Role   string        `json:"role"`
 	Access db.UserAccess `json:"access"`
 	jwt.RegisteredClaims
@@ -20,8 +21,10 @@ type JwtTokens struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-var issuer = "pingoh"
-var secret = "secret"
+var (
+	issuer = "pingoh"
+	secret = "secret"
+)
 
 func NewJwtTokens(id int, role string, access db.UserAccess) (JwtTokens, error) {
 	var tokens JwtTokens
