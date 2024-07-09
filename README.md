@@ -1,11 +1,11 @@
-# build frontend
+```bash
 cd frontend
-npm i
+npm ci .
 npm run build
 cd ../
-
 # build app
 go build
+```
 
 # for development
 Install [nodemon](https://nodemon.io) with `npm install -g nodemon` and run `nodemon` in the root directory.
