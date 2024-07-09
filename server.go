@@ -71,7 +71,7 @@ func setLogger() {
 	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
 	// todo: console only on dev
-	file, _ := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
+	file, _ := os.OpenFile("pingoh.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o666)
 	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	multiw := zerolog.MultiLevelWriter(consoleWriter, file)
 	log.Logger = log.Output(multiw)

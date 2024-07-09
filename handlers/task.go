@@ -52,8 +52,8 @@ func (tch *TaskChannel) Unsubscribe(subID int) {
 type NewTask struct {
 	Name        string   `json:"name" validate:"required"`
 	Type        string   `json:"type" validate:"required,oneof=http ws"`
-	Repeat      bool     `json:"repeat" validate:"required"`
-	Active      bool     `json:"active" validate:"required"`
+	Repeat      bool     `json:"repeat" validate:""`
+	Active      bool     `json:"active" validate:""`
 	Interval    int      `json:"interval" validate:"required,gte=1"`
 	Description string   `json:"description" validate:"required"`
 	Tags        []string `json:"tags" validate:"required,unique"`

@@ -39,6 +39,9 @@
 	});
 </script>
 
+<h1>
+  Click on a color block to copy the css.
+</h1>
 <div class="page">
 	<div class="latte">
 		{#each latteVariables as v (v)}

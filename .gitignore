@@ -1,5 +1,15 @@
+# app db
+pingoh.db
+
+# app log
+pingoh.log
+
+# app binaries
 pingoh
 pingoh.exe
-test.log
-data.db
+
+# ws client https://github.com/vi/websocat
 websocat.x86_64-pc-windows-gnu.exe
+
+# swap file
+.fuse_hidden*

@@ -16,7 +16,7 @@ func panicOnErr(err error, reason string) {
 
 func ConnectDB() {
 	var err error
-	DB, err = sqlx.Connect("sqlite", "./data.db")
+	DB, err = sqlx.Connect("sqlite", "./pingoh.db")
 	panicOnErr(err, "error connecting to db!")
 	// defer DB.Close()
 

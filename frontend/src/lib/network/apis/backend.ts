@@ -1,18 +1,18 @@
 // import { PUBLIC_ADMIN_API_URL } from '$env/static/public';
+import { dev } from '$app/environment';
 import { log } from '$lib/logger';
-import { authedUser } from '$lib/stores/auth';
+import { auth } from '$lib/stores/auth';
 import axios, { type AxiosInstance } from 'axios';
-import { get } from 'svelte/store';
 export { type AxiosInstance } from 'axios';
 
 const backendApi: AxiosInstance = axios.create({
-	baseURL: 'http://localhost:3000/api'
+	baseURL: `http://${dev ? 'localhost:3000' : window.location.host}/api`
 });
 
 backendApi.defaults.headers.common['Content-Type'] = 'application/json';
 backendApi.interceptors.request.use(
 	(config) => {
-		config.headers.Authorization = 'Bearer ' + get(authedUser)?.access_token;
+		config.headers.Authorization = 'Bearer ' + auth.user?.access_token;
 		log.cl_req(config.method ?? '-', config.url ?? '-', config.data);
 		return config;
 	},

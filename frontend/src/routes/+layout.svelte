@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { beforeNavigate } from '$app/navigation';
-	import { authedUser } from '$lib/stores/auth';
+	import { auth } from '$lib/stores/auth';
 	import { uacController } from '$lib/user.access.controller';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { appTheme } from '$lib/stores/theme';
@@ -12,11 +12,7 @@
 	// authenticate client side routing
 	beforeNavigate((navigation) => {
 		if (navigation.willUnload) return;
-		const error = uacController.authorize(
-			authedUser.get(),
-			navigation.to?.url.pathname ?? '',
-			'get'
-		);
+		const error = uacController.authorize(auth.user, navigation.to?.url.pathname ?? '', 'get');
 		if (browser && error) {
 			navigation.cancel();
 			alert(error.message);
@@ -28,11 +24,13 @@
 
 <QueryClientProvider client={queryClient}>
 	<nav>
-		<a href="/">Home</a>
-		<a href="/about">About</a>
-		<a href="/auth/signin">signin</a>
+		{#if $auth}
+			<a href="/">Home</a>
+			<a href="/about">About</a>
+    {:else}
+			<a href="/auth/signin">Signin</a>
+		{/if}
 		<a href="/dbg/col">colors</a>
-		{$authedUser?.role ?? '-'}
 		<button on:click={() => appTheme.toggle()}>toggle</button>
 	</nav>
 	<slot />

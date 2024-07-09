@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { authedUser } from '$lib/stores/auth';
-	import { get } from 'svelte/store';
+	import { auth } from '$lib/stores/auth';
 
 	export let data;
 </script>
@@ -9,4 +8,5 @@
 <p>{data.message}</p>
 base = =<a href="/">home</a>
 
-<div>{JSON.stringify(get(authedUser))}</div>
+<div>{JSON.stringify($auth)}</div>
+<!-- <div>{JSON.stringify(authh.user)}</div> -->

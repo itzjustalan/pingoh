@@ -6,8 +6,8 @@ import {
 } from '$lib/models/input/user';
 import backendApi from './apis/backend';
 import { decodeJwt } from '$lib/utils';
-import { authedUser, type AuthedUser } from '$lib/stores/auth';
-import { get } from 'svelte/store';
+import { auth, type AuthedUser } from '$lib/stores/auth';
+import { invalidateAll } from '$app/navigation';
 
 class AuthNetwork {
 	accessTimeout: NodeJS.Timeout | undefined;
@@ -18,14 +18,15 @@ class AuthNetwork {
 
 	signout = () => {
 		clearInterval(this.accessTimeout);
-		authedUser.clear();
+		auth._set(undefined);
+    invalidateAll();
 	};
 
 	signup = async (data: SignupInput): Promise<AuthedUser> => {
 		signupInputSchema.parse(data);
 		const res = await backendApi.post<AuthedUser>('/auth/signup', data);
 		this._autoRefresh(res.data.access_token);
-		authedUser.set(res.data);
+		auth._set(res.data);
 		return res.data;
 	};
 
@@ -33,16 +34,16 @@ class AuthNetwork {
 		signinInputSchema.parse(data);
 		const res = await backendApi.post<AuthedUser>('/auth/signin', data);
 		this._autoRefresh(res.data.access_token);
-		authedUser.set(res.data);
+		auth._set(res.data);
 		return res.data;
 	};
 
 	refresh = async (): Promise<AuthedUser> => {
 		const response = await backendApi.post<AuthedUser>('/auth/refresh', {
-			token: get(authedUser)?.refresh_token
+			token: auth.user?.refresh_token
 		});
 		this._autoRefresh(response.data.access_token);
-		authedUser.updateTokens(response.data);
+		auth._updateTokens(response.data);
 		return response.data;
 	};
 

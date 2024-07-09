@@ -14,12 +14,15 @@ function createStore() {
 	const store = writable<AuthedUser | undefined>(stored === null ? undefined : JSON.parse(stored));
 
 	return {
-		get: () => get(store),
+    get user() {
+      return get(store);
+    },
+    get isLoggedIn() {
+      return get(store) !== undefined;
+    },
 		subscribe: store.subscribe,
-		set: (u: AuthedUser) => store.set(u),
-		clear: () => store.update(() => undefined),
-		authorized: () => get(store) !== undefined,
-		updateTokens: (tokens: Partial<AuthedUser>) =>
+		_set: (u: AuthedUser | undefined) => store.set(u),
+		_updateTokens: (tokens: Partial<AuthedUser>) =>
 			store.update((v) => {
 				if (!v) return;
 				v.access_token = tokens.access_token ?? '';
@@ -29,8 +32,8 @@ function createStore() {
 	};
 }
 
-export const authedUser = createStore();
-authedUser.subscribe((v) => {
+export const auth = createStore();
+auth.subscribe((v) => {
 	if (!browser) return;
 	if (!v) localStorage.removeItem(storeKey);
 	else localStorage.setItem(storeKey, JSON.stringify(v));

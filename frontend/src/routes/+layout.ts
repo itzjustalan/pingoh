@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { authedUser } from '$lib/stores/auth';
+import { auth } from '$lib/stores/auth';
 import { uacController } from '$lib/user.access.controller';
 
 export const csr = true;
@@ -15,9 +15,9 @@ export const trailingSlash = 'always';
 export async function load(input) {
 	// handle direct links
 	if (browser) {
-		const error = uacController.authorize(authedUser.get(), input.route.id ?? '', 'get');
+		const error = uacController.authorize(auth.user, input.route.id ?? '', 'get');
 		if (error) {
-			if (authedUser.authorized()) {
+			if (auth.isLoggedIn) {
 				goto('/');
 			} else {
 				goto('/auth/signin');
