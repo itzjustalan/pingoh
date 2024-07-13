@@ -1,6 +1,6 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import "./App.css";
+import "./css/app.css";
 
 declare module "@tanstack/react-router" {
   interface Register {
