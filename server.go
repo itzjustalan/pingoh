@@ -22,7 +22,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-//go:embed all:frontend/build
+//go:embed all:frontend/dist
 var dashboard embed.FS
 
 var (
@@ -48,7 +48,7 @@ func main() {
 	app.Use("/", filesystem.New(filesystem.Config{
 		// Root:       http.FS(frontend.BuildDir),
 		Root:       http.FS(dashboard),
-		PathPrefix: "frontend/build",
+		PathPrefix: "frontend/dist",
 		Browse:     true,
 	}))
 
