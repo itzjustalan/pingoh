@@ -1,9 +1,19 @@
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 import "./App.css";
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+const router = createRouter({ routeTree });
 
 function App() {
   return (
     <>
-      <h1>Pingoh</h1>
+      <RouterProvider router={router} />
     </>
   );
 }
