@@ -17,12 +17,13 @@ export const authStore = create<AuthStoreState>()(
       user: undefined,
       _set: (u: AuthedUser | undefined) =>
         set((state) => ({ ...state, user: u })),
-      _updateTokens: (tokens: Partial<AuthedUser>) => set((state) => {
-        if (!state.user) return state;
-        state.user.access_token = tokens.access_token ?? '';
-        state.user.refresh_token = tokens.refresh_token ?? '';
-        return state;
-      }),
+      _updateTokens: (tokens: Partial<AuthedUser>) =>
+        set((state) => {
+          if (!state.user) return state;
+          state.user.access_token = tokens.access_token ?? "";
+          state.user.refresh_token = tokens.refresh_token ?? "";
+          return state;
+        }),
     }),
     { name: "auth" },
   ),

@@ -8,11 +8,11 @@ export const Route = createFileRoute("/auth/signin")({
 });
 
 const SigninPage = () => {
-  const navigate = useNavigate({ from: '/auth/signin' });
+  const navigate = useNavigate({ from: "/auth/signin" });
   const signin = useMutation({
     mutationKey: ["signin"],
     mutationFn: authNetwork.signin,
-    onSuccess: () => navigate({ to: '/' })
+    onSuccess: () => navigate({ to: "/" }),
   });
   const form = useForm({
     defaultValues: {
@@ -20,7 +20,7 @@ const SigninPage = () => {
       passw: "",
     },
     onSubmit: async ({ value }) => {
-      signin.mutateAsync(value)
+      signin.mutateAsync(value);
     },
   });
   return (
@@ -64,14 +64,10 @@ const SigninPage = () => {
             />
           )}
         />
-        <form.Subscribe
-          selector={(state) => state.errors}
-          children={(errors) => errors.length > 0 && (
-            <>
-            {errors.toString()}
-            </>
-          )}
-        />
+        {/* <form.Subscribe */}
+        {/*   selector={(state) => state.errors} */}
+        {/*   children={(errors) => errors.length > 0 && errors.toString()} */}
+        {/* /> */}
         <button type="submit">Submit</button>
       </form>
     </>

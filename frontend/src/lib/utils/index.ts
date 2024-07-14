@@ -1,47 +1,47 @@
 import { log } from "../logger";
 
-
 export const getCookieValue = (name: string, cookie: string | null) =>
-	cookie?.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`)?.pop() || null;
+  cookie?.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`)?.pop() || null;
 
 export const sleep = async (t: number) => new Promise((r) => setTimeout(r, t));
 
-export const withTimeout = (p: object, msg = 'time out', ms = 1000) =>
-	Promise.race([p, new Promise((_, r) => setTimeout(() => r(msg), ms))]);
+export const withTimeout = (p: object, msg = "time out", ms = 1000) =>
+  Promise.race([p, new Promise((_, r) => setTimeout(() => r(msg), ms))]);
 
 // export const decodeJwt = (token: string) => jwt.decode(token); // needs polyfills
 
 export interface JwtPayload {
-	uid: string;
-	role: string;
-	iat: number;
-	exp: number;
+  uid: string;
+  role: string;
+  iat: number;
+  exp: number;
 }
 
 export const decodeJwt = (token: string): JwtPayload => {
-	const base64Url = token.split('.')[1];
-	const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-	const jsonPayload = decodeURIComponent(
-		window
-			.atob(base64)
-			.split('')
-			.map((c) => {
-				return `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`;
-			})
-			.join('')
-	);
-	return JSON.parse(jsonPayload) as JwtPayload;
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map((c) => {
+        return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
+      })
+      .join(""),
+  );
+  return JSON.parse(jsonPayload) as JwtPayload;
 };
 
 export const ToTitleCase = (text: string) => {
-	return text
-		.toLowerCase()
-		.split(' ')
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-		.join(' ');
+  return text
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 
-export const prettyPrintV = (title: string) => ToTitleCase(title.replaceAll('-', ' '));
+export const prettyPrintV = (title: string) =>
+  ToTitleCase(title.replaceAll("-", " "));
 
 // export const deleteUndefinedKeys = <T extends object>(data: T): void =>
 // 	Object.keys(data).map(
@@ -74,13 +74,14 @@ export const prettyPrintV = (title: string) => ToTitleCase(title.replaceAll('-',
  * ```
  * */
 export const deleteUndefinedKeys = <T extends object>(data: T): void =>
-	Object.entries(data).forEach(([k, v]: [k: string, v: unknown]) =>
-		v === undefined
-			? delete data[k as keyof T]
-			: v && typeof v === 'object'
-				? deleteUndefinedKeys(v)
-				: undefined
-	);
+  // biome-ignore lint/complexity/noForEach: it's beautiful shut up
+  Object.entries(data).forEach(([k, v]: [k: string, v: unknown]) =>
+    v === undefined
+      ? delete data[k as keyof T]
+      : v && typeof v === "object"
+        ? deleteUndefinedKeys(v)
+        : undefined,
+  );
 
 // export const prettyPrintMenuItemType = (itemType: MenuItemType) => {
 // 	switch (itemType) {
@@ -96,38 +97,38 @@ export const deleteUndefinedKeys = <T extends object>(data: T): void =>
 // };
 
 export const copyToClipboard = (text: string) => {
-	if (navigator.clipboard) {
-		navigator.clipboard.writeText(text).then(
-			function () {
-				log.info('Async: Copying to clipboard was successful!');
-			},
-			function (err) {
-				log.error('Async: Could not copy text: ', err);
-			}
-		);
-	} else {
-		const textArea = document.createElement('textarea');
-		textArea.value = text;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(
+      () => {
+        log.info("Async: Copying to clipboard was successful!");
+      },
+      (err) => {
+        log.error("Async: Could not copy text: ", err);
+      },
+    );
+  } else {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
 
-		// Avoid scrolling to bottom
-		textArea.style.top = '0';
-		textArea.style.left = '0';
-		textArea.style.position = 'fixed';
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
 
-		document.body.appendChild(textArea);
-		textArea.focus();
-		textArea.select();
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
 
-		try {
-			const successful = document.execCommand('copy');
-			const msg = successful ? 'successful' : 'unsuccessful';
-			log.info('Fallback: Copying text command was ' + msg);
-		} catch (err) {
-			log.error('Fallback: Oops, unable to copy', err);
-		}
+    try {
+      const successful = document.execCommand("copy");
+      const msg = successful ? "successful" : "unsuccessful";
+      log.info(`Fallback: Copying text command was ${msg}`);
+    } catch (err) {
+      log.error("Fallback: Oops, unable to copy", err);
+    }
 
-		document.body.removeChild(textArea);
-		return;
-	}
-	log.info(text);
+    document.body.removeChild(textArea);
+    return;
+  }
+  log.info(text);
 };

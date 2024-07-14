@@ -1,5 +1,9 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Layout, Menu } from "antd";
+import Sider from "antd/es/layout/Sider";
+import { Content } from "antd/es/layout/layout";
 import React, { Suspense } from "react";
+import { MenuNavItem } from "../components/MenuNavItem";
 import { env } from "../env";
 
 const TanStackRouterDevtools = env.prod
@@ -14,27 +18,49 @@ const TanStackRouterDevtools = env.prod
     );
 
 export const Route = createRootRoute({
-  component: () => (
-    <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>{" "}
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>{" "}
-        <Link to="/auth/signin" className="[&.active]:font-bold">
-          Singin
-        </Link>{" "}
-        <Link to="/tasks/new" className="[&.active]:font-bold">
-          Create Task
-        </Link>{" "}
-      </div>
-      <hr />
-      <Outlet />
-      <Suspense>
-        <TanStackRouterDevtools />
-      </Suspense>
-    </>
-  ),
+  component: () => {
+    return (
+      <>
+        <Layout>
+          <Sider
+            style={{
+              overflow: "auto",
+              height: "100vh",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              bottom: 0,
+            }}
+          >
+            <Menu theme="dark" mode="inline">
+              <MenuNavItem to="/" title="Home" />
+              <MenuNavItem to="/about" title="About" />
+              <MenuNavItem to="/auth/signin" title="Signin" />
+              <MenuNavItem to="/tasks/new" title="Create Task" />
+            </Menu>
+          </Sider>
+        </Layout>
+        <Layout
+          style={{
+            marginLeft: 200,
+          }}
+        >
+          {/* <Header /> */}
+          <Content>
+            <Outlet />
+          </Content>
+          {/* <Footer */}
+          {/*   style={{ */}
+          {/*     textAlign: "center", */}
+          {/*   }} */}
+          {/* > */}
+          {/*   Pingoh © 2023 */}
+          {/* </Footer> */}
+        </Layout>
+        <Suspense>
+          <TanStackRouterDevtools />
+        </Suspense>
+      </>
+    );
+  },
 });
