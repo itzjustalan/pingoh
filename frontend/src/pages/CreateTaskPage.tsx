@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Flex } from "antd";
+import { Button, Flex, Spin, message } from "antd";
 import { InputField } from "../components/form/InputField";
 import { tasksNetwork } from "../lib/networks/tasks";
 
@@ -25,13 +25,21 @@ const defaultValues = {
 };
 
 export const CreateTaskPage = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const createTask = useMutation({
     mutationKey: ["create", "task"],
     mutationFn: tasksNetwork.create,
+    onSuccess: () => {
+      messageApi.success('Task created');
+    },
+    onError: (error) => {
+      messageApi.error(error.message ?? 'Error creating Task');
+    },
   });
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
+      // messageApi.warning("Validation failed")
       createTask.mutateAsync(value);
     },
   });
@@ -45,7 +53,8 @@ export const CreateTaskPage = () => {
 
   return (
     <>
-      new task
+      {contextHolder}
+      <h1>Create Task</h1>
       <Button htmlType="button" onClick={fillForm}>
         Fill
       </Button>
@@ -85,8 +94,12 @@ export const CreateTaskPage = () => {
           />
           <br />
 
-          <Button type="primary" htmlType="submit">
-            Submit
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={createTask.isPending}
+          >
+            {createTask.isPending ? <Spin /> : "Submit"}
           </Button>
         </Flex>
       </form>
