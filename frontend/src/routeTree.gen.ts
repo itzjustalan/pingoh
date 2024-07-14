@@ -13,11 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthSigninImport } from './routes/auth.signin'
 
 // Create Virtual Routes
 
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
+const TasksNewLazyImport = createFileRoute('/tasks/new')()
 
 // Create/Update Routes
 
@@ -30,6 +32,16 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const TasksNewLazyRoute = TasksNewLazyImport.update({
+  path: '/tasks/new',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/tasks.new.lazy').then((d) => d.Route))
+
+const AuthSigninRoute = AuthSigninImport.update({
+  path: '/auth/signin',
+  getParentRoute: () => rootRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -49,6 +61,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/auth/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninImport
+      parentRoute: typeof rootRoute
+    }
+    '/tasks/new': {
+      id: '/tasks/new'
+      path: '/tasks/new'
+      fullPath: '/tasks/new'
+      preLoaderRoute: typeof TasksNewLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -57,6 +83,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AboutLazyRoute,
+  AuthSigninRoute,
+  TasksNewLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -68,7 +96,9 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about"
+        "/about",
+        "/auth/signin",
+        "/tasks/new"
       ]
     },
     "/": {
@@ -76,6 +106,12 @@ export const routeTree = rootRoute.addChildren({
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/auth/signin": {
+      "filePath": "auth.signin.tsx"
+    },
+    "/tasks/new": {
+      "filePath": "tasks.new.lazy.tsx"
     }
   }
 }
