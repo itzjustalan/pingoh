@@ -19,8 +19,7 @@ func createHttpResultTable() error {
 		code INTEGER NOT NULL,
 		ok BOOLEAN NOT NULL,
 		duration_ns INTEGER NOT NULL,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		CONSTRAINT fk_tasks FOREIGN KEY (task_id) REFERENCES tasks(id)
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	)
 	`
 	_, err := DB.Exec(q)

@@ -165,8 +165,7 @@ func createHttpTasksTable() error {
 			'none',
 			'basic',
 			'oauth2'
-		) ),
-		CONSTRAINT fk_tasks FOREIGN KEY (task_id) REFERENCES tasks(id)
+		) )
 	)
 	`
 	_, err := DB.Exec(q)
@@ -184,8 +183,7 @@ func createHttpAuthsTable() error {
 		oauth_url  TEXT NOT NULL DEFAULT "",
 		oauth_client_id  TEXT NOT NULL DEFAULT "",
 		oauth_client_secret  TEXT NOT NULL DEFAULT "",
-		oauth_client_scope  TEXT NOT NULL DEFAULT "",
-		CONSTRAINT fk_tasks FOREIGN KEY (task_id) REFERENCES tasks(id)
+		oauth_client_scope  TEXT NOT NULL DEFAULT ""
 	)
 	`
 	_, err := DB.Exec(q)

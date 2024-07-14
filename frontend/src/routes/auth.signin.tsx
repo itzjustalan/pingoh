@@ -39,7 +39,6 @@ const SigninPage = () => {
           // validators={{
           //   onBlur: signinInputSchema.shape.email,
           // }}
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
           children={(field) => (
             <input
               name={field.name}
@@ -55,7 +54,6 @@ const SigninPage = () => {
           // validators={{
           //   onBlur: signinInputSchema.shape.passw,
           // }}
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
           children={(field) => (
             <input
               type="password"
@@ -68,7 +66,6 @@ const SigninPage = () => {
         />
         <form.Subscribe
           selector={(state) => state.errors}
-          // biome-ignore lint/correctness/noChildrenProp: <explanation>
           children={(errors) => errors.length > 0 && (
             <>
             {errors.toString()}
