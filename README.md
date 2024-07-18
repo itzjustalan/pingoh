@@ -5,7 +5,7 @@ Inspired by [Uptime Kuma](https://github.com/louislam/uptime-kuma), this is a si
 Make sure you have the dependencies installed.
 ```bash
 ❯ node -v
-v20.12.2
+v20.15.0
 ❯ go version
 go version go1.22.5 linux/amd64
 ```
