@@ -1,5 +1,7 @@
 package services
 
+import "regexp"
+
 func HeaderForEncoding(enc string) string {
 	h := ""
 	switch enc {
@@ -15,4 +17,9 @@ func HeaderForEncoding(enc string) string {
 		h = "application/x-www-form-urlencoded"
 	}
 	return h
+}
+
+func IsAlphanumeric(str string) bool {
+	alphanumericRegex := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+	return alphanumericRegex.MatchString(str)
 }

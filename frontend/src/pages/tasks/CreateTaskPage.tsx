@@ -1,8 +1,8 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Button, Flex, Spin, message } from "antd";
-import { InputField } from "../components/form/InputField";
-import { tasksNetwork } from "../lib/networks/tasks";
+import { InputField } from "../../components/form/InputField";
+import { tasksNetwork } from "../../lib/networks/tasks";
 
 const defaultValues = {
   name: "",
@@ -30,10 +30,10 @@ export const CreateTaskPage = () => {
     mutationKey: ["create", "task"],
     mutationFn: tasksNetwork.create,
     onSuccess: () => {
-      messageApi.success('Task created');
+      messageApi.success("Task created");
     },
     onError: (error) => {
-      messageApi.error(error.message ?? 'Error creating Task');
+      messageApi.error(error.message ?? "Error creating Task");
     },
   });
   const form = useForm({

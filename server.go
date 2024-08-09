@@ -6,12 +6,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
-	"time"
-
 	"pingoh/api"
 	"pingoh/db"
 	"pingoh/handlers"
+	"syscall"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -26,18 +25,22 @@ import (
 var dashboard embed.FS
 
 var (
-  PINGOH_PORT = ":3000"
-  PINGOH_DB_FILE = "pingoh.db"
-  PINGOH_LOG_FILE = "pingoh.log"
+	PINGOH_PORT     = ":3000"
+	PINGOH_DB_FILE  = "pingoh.db"
+	PINGOH_LOG_FILE = "pingoh.log"
 )
 
 func main() {
-  loadEnvs()
+	loadEnvs()
 	setLogger(&PINGOH_LOG_FILE)
 	db.ConnectDB(&PINGOH_DB_FILE)
 	go listenAndStop()
-	app := fiber.New()
 	handlers.StartTasks()
+	app := fiber.New(fiber.Config{
+		ServerHeader:             "Pingoh",
+		AppName:                  "Pingoh",
+		EnableSplittingOnParsers: true,
+	})
 
 	app.Use(cors.New())
 	app.Use(logger.New())
@@ -69,22 +72,22 @@ func listenAndStop() {
 }
 
 func loadEnvs() {
-  if v := os.Getenv("PINGOH_PORT"); v != "" {
-    PINGOH_PORT = v
-  }
-  if v := os.Getenv("PINGOH_DB_FILE"); v != "" {
-    PINGOH_DB_FILE = v
-  }
-  if v := os.Getenv("PINGOH_LOG_FILE"); v != "" {
-    PINGOH_LOG_FILE = v
-  }
+	if v := os.Getenv("PINGOH_PORT"); v != "" {
+		PINGOH_PORT = v
+	}
+	if v := os.Getenv("PINGOH_DB_FILE"); v != "" {
+		PINGOH_DB_FILE = v
+	}
+	if v := os.Getenv("PINGOH_LOG_FILE"); v != "" {
+		PINGOH_LOG_FILE = v
+	}
 
-  // maybe in the future recieve a number and create the port string in run time with fmt.Sprintf(":%d", port)
-  // and also check if the port is free or something something like that that lol
-  flag.StringVar(&PINGOH_PORT, "port", PINGOH_PORT, "port number in :3000 format")
-  flag.StringVar(&PINGOH_DB_FILE, "db", PINGOH_DB_FILE, "db file path")
-  flag.StringVar(&PINGOH_LOG_FILE, "log", PINGOH_LOG_FILE, "log file path")
-  flag.Parse()
+	// maybe in the future recieve a number and create the port string in run time with fmt.Sprintf(":%d", port)
+	// and also check if the port is free or something something like that that lol
+	flag.StringVar(&PINGOH_PORT, "port", PINGOH_PORT, "port number in :3000 format")
+	flag.StringVar(&PINGOH_DB_FILE, "db", PINGOH_DB_FILE, "db file path")
+	flag.StringVar(&PINGOH_LOG_FILE, "log", PINGOH_LOG_FILE, "log file path")
+	flag.Parse()
 }
 
 func setLogger(logfile *string) {

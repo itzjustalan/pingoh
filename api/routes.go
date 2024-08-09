@@ -15,4 +15,5 @@ func AddRoutes(app *fiber.App) {
 	addAuthChecks(&api)
 	addTaskRoutes(&api)
 	addStatsRoutes(&api)
+	addSharedRoutes(&api)
 }

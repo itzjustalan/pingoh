@@ -19,6 +19,7 @@ import { Route as AuthSigninImport } from './routes/auth.signin'
 
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
+const TasksIndexLazyImport = createFileRoute('/tasks/')()
 const TasksNewLazyImport = createFileRoute('/tasks/new')()
 
 // Create/Update Routes
@@ -32,6 +33,11 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const TasksIndexLazyRoute = TasksIndexLazyImport.update({
+  path: '/tasks/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/tasks.index.lazy').then((d) => d.Route))
 
 const TasksNewLazyRoute = TasksNewLazyImport.update({
   path: '/tasks/new',
@@ -75,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TasksNewLazyImport
       parentRoute: typeof rootRoute
     }
+    '/tasks/': {
+      id: '/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -85,6 +98,7 @@ export const routeTree = rootRoute.addChildren({
   AboutLazyRoute,
   AuthSigninRoute,
   TasksNewLazyRoute,
+  TasksIndexLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -98,7 +112,8 @@ export const routeTree = rootRoute.addChildren({
         "/",
         "/about",
         "/auth/signin",
-        "/tasks/new"
+        "/tasks/new",
+        "/tasks/"
       ]
     },
     "/": {
@@ -112,6 +127,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/tasks/new": {
       "filePath": "tasks.new.lazy.tsx"
+    },
+    "/tasks/": {
+      "filePath": "tasks.index.lazy.tsx"
     }
   }
 }

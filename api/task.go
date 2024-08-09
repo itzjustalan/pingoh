@@ -19,11 +19,7 @@ func addTaskRoutes(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
-		err = handlers.CreateNewTask(&b)
-		if err != nil {
-			return err
-		}
-		return nil
+		return handlers.CreateNewTask(&b)
 	})
 
 	r.Get("/:task_id/activate", func(c *fiber.Ctx) error {
@@ -31,7 +27,7 @@ func addTaskRoutes(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
-    log.Info().Msgf("Activating task with ID: %d", id)
+		log.Info().Msgf("Activating task with ID: %d", id)
 		return handlers.ActivateTaskByID(id)
 	})
 
@@ -40,7 +36,7 @@ func addTaskRoutes(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
-    log.Info().Msgf("Deactivating task with ID: %d", id)
+		log.Info().Msgf("Deactivating task with ID: %d", id)
 		return handlers.DeactivateTaskByID(id)
 	})
 }
