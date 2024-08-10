@@ -1,7 +1,7 @@
 package routes
 
 import (
-  "pingoh/controllers"
+	"pingoh/controllers"
 	"pingoh/services"
 	"strings"
 
