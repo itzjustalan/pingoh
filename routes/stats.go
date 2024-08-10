@@ -1,7 +1,7 @@
-package api
+package routes
 
 import (
-	"pingoh/handlers"
+	"pingoh/controllers"
 	"strconv"
 
 	"github.com/gofiber/contrib/websocket"
@@ -16,7 +16,7 @@ func addStatsRoutes(api *fiber.Router) {
 		if err != nil {
 			return err
 		}
-		res, err := handlers.HttpResultsByTaskID(tid)
+		res, err := controllers.HttpResultsByTaskID(tid)
 		if err != nil {
 			return err
 		}
@@ -49,12 +49,12 @@ func addStatsRoutes(api *fiber.Router) {
 			case 1:
 				switch cmd := string(msg); cmd {
 				case "start":
-					res, err := handlers.HttpResultsByTaskID(tid)
+					res, err := controllers.HttpResultsByTaskID(tid)
 					if err != nil {
 						c.WriteMessage(websocket.TextMessage, []byte("error fetching results"))
 					}
 					c.WriteJSON(res)
-					go handlers.SendHttpResultsUpdates(tid, c, ch)
+					go controllers.SendHttpResultsUpdates(tid, c, ch)
 				case "stop":
 					ch <- "stop"
 					return

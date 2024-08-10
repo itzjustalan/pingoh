@@ -1,7 +1,7 @@
-package api
+package routes
 
 import (
-	"pingoh/handlers"
+	"pingoh/controllers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -11,15 +11,15 @@ func addTaskRoutes(api *fiber.Router) {
 	r := (*api).Group("/tasks")
 
 	r.Post("/", func(c *fiber.Ctx) error {
-		var b handlers.NewTask
+		var b controllers.NewTask
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
-		err := handlers.Validator.Struct(&b)
+		err := controllers.Validator.Struct(&b)
 		if err != nil {
 			return err
 		}
-		return handlers.CreateNewTask(&b)
+		return controllers.CreateNewTask(&b)
 	})
 
 	r.Get("/:task_id/activate", func(c *fiber.Ctx) error {
@@ -28,7 +28,7 @@ func addTaskRoutes(api *fiber.Router) {
 			return err
 		}
 		log.Info().Msgf("Activating task with ID: %d", id)
-		return handlers.ActivateTaskByID(id)
+		return controllers.ActivateTaskByID(id)
 	})
 
 	r.Get("/:task_id/deactivate", func(c *fiber.Ctx) error {
@@ -37,6 +37,6 @@ func addTaskRoutes(api *fiber.Router) {
 			return err
 		}
 		log.Info().Msgf("Deactivating task with ID: %d", id)
-		return handlers.DeactivateTaskByID(id)
+		return controllers.DeactivateTaskByID(id)
 	})
 }

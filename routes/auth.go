@@ -1,7 +1,7 @@
-package api
+package routes
 
 import (
-	"pingoh/handlers"
+  "pingoh/controllers"
 	"pingoh/services"
 	"strings"
 
@@ -33,15 +33,15 @@ func addAuthRoutes(api *fiber.Router) {
 	auth := (*api).Group("/auth")
 
 	auth.Post("/signup", func(c *fiber.Ctx) error {
-		var b handlers.SignupCredentials
+		var b controllers.SignupCredentials
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
-		err := handlers.Validator.Struct(&b)
+		err := controllers.Validator.Struct(&b)
 		if err != nil {
 			return err
 		}
-		u, err := handlers.Signup(&b)
+		u, err := controllers.Signup(&b)
 		if err != nil {
 			return err
 		}
@@ -49,15 +49,15 @@ func addAuthRoutes(api *fiber.Router) {
 	})
 
 	auth.Post("/signin", func(c *fiber.Ctx) error {
-		var b handlers.SigninCredentials
+		var b controllers.SigninCredentials
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
-		err := handlers.Validator.Struct(&b)
+		err := controllers.Validator.Struct(&b)
 		if err != nil {
 			return err
 		}
-		u, err := handlers.Signin(&b)
+		u, err := controllers.Signin(&b)
 		if err != nil {
 			return err
 		}
@@ -71,7 +71,7 @@ func addAuthRoutes(api *fiber.Router) {
 		if err := c.BodyParser(&b); err != nil {
 			return fiber.ErrBadRequest
 		}
-		u, err := handlers.RefreshTokens(b.Token)
+		u, err := controllers.RefreshTokens(b.Token)
 		if err != nil {
 			return err
 		}

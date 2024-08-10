@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"pingoh/api"
+	"pingoh/controllers"
 	"pingoh/db"
-	"pingoh/handlers"
+	"pingoh/routes"
 	"syscall"
 	"time"
 
@@ -35,7 +35,7 @@ func main() {
 	setLogger(&PINGOH_LOG_FILE)
 	db.ConnectDB(&PINGOH_DB_FILE)
 	go listenAndStop()
-	handlers.StartTasks()
+	controllers.StartTasks()
 	app := fiber.New(fiber.Config{
 		ServerHeader:             "Pingoh",
 		AppName:                  "Pingoh",
@@ -46,7 +46,7 @@ func main() {
 	app.Use(logger.New())
 	app.Use(recover.New())
 
-	api.AddRoutes(app)
+	routes.AddRoutes(app)
 
 	app.Use("/", filesystem.New(filesystem.Config{
 		// Root:       http.FS(frontend.BuildDir),

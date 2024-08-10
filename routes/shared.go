@@ -1,7 +1,7 @@
-package api
+package routes
 
 import (
-	"pingoh/handlers"
+	"pingoh/controllers"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -10,16 +10,16 @@ func addSharedRoutes(api *fiber.Router) {
 	r := (*api).Group("/shared")
 
 	r.Get("/fetch", func(c *fiber.Ctx) error {
-		var p handlers.FetchParams
+		var p controllers.FetchParams
 		if err := c.QueryParser(&p); err != nil {
 			return fiber.ErrBadRequest
 		}
-		err := handlers.Validator.Struct(&p)
+		err := controllers.Validator.Struct(&p)
 		if err != nil {
 			return err
 		}
 		p.M = c.Queries()
-		res, err := handlers.Fetch(&p)
+		res, err := controllers.Fetch(&p)
 		if err != nil {
 			return err
 		}
