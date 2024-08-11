@@ -1,6 +1,61 @@
 package db
 
-func SelectGenericRows(q string) ([]map[string]interface{}, error) {
+import (
+	"strings"
+)
+
+const DbTableColumnSeperator = "____"
+
+func SelectGenericRowsx(q string) ([]map[string]map[string]interface{}, error) {
+	var res []map[string]map[string]interface{}
+
+	rows, err := DB.Queryx(q)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		data := make(map[string]map[string]interface{})
+		results := make(map[string]interface{})
+		err := rows.MapScan(results)
+		if err != nil {
+			return res, err
+		}
+		for k, v := range results {
+			table := strings.Split(k, DbTableColumnSeperator)[0]
+			column := strings.Split(k, DbTableColumnSeperator)[1]
+			if _, ok := data[table]; !ok {
+				data[table] = make(map[string]interface{})
+			}
+			data[table][column] = v
+		}
+		res = append(res, data)
+	}
+	return res, err
+}
+
+func SelectGenericRowsAsMap(q string) ([]map[string]interface{}, error) {
+	var res []map[string]interface{}
+
+	rows, err := DB.Queryx(q)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		results := make(map[string]interface{})
+		err := rows.MapScan(results)
+		if err != nil {
+			return res, err
+		}
+		res = append(res, results)
+	}
+	return res, err
+}
+
+func SelectGenericRowsCustom(q string) ([]map[string]interface{}, error) {
 	var res []map[string]interface{}
 
 	rows, err := DB.Query(q)

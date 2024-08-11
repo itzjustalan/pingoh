@@ -109,7 +109,7 @@ func selectAllowedFiledsOf(resource string) (string, error) {
 	}
 	keys := make([]string, 0, len(config.Fields))
 	for key := range config.Fields {
-		keys = append(keys, config.Table+"."+key)
+		keys = append(keys, config.Table+"."+key+" AS "+config.Table+db.DbTableColumnSeperator+key)
 	}
 	return strings.Join(keys, ", "), nil
 }
@@ -202,7 +202,7 @@ func innerJoinsFromParams(p *FetchParams) (string, error) {
 		if !ok {
 			continue
 		}
-		innerJoins += " INNER JOIN " + table + " ON " + f + " = " + config.Table + "." + k
+		innerJoins += " INNER JOIN " + table + " ON " + config.Table + "." + k + " = " + f
 		innerJoins_added = true
 	}
 
@@ -223,7 +223,7 @@ func limitsFromParams(p *FetchParams) string {
 	return " LIMIT " + strconv.Itoa(p.PageSize) + " OFFSET " + strconv.Itoa(p.PageSize*(p.PageCount-1))
 }
 
-func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
+func FetchQuery(p *FetchParams) (string, error) {
 	q := "SELECT "
 
 	if p.Count {
@@ -231,7 +231,7 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	} else {
 		selectFields, err := selectAllowedFiledsOf(p.Resource)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 		q += selectFields
 		for k, v := range p.M {
@@ -239,7 +239,7 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 				table := strings.Split(v, ".")[0]
 				fields, err := selectAllowedFiledsOf(table)
 				if err != nil {
-					return nil, err
+					return "", err
 				}
 				q += ", " + fields
 			}
@@ -247,25 +247,39 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	}
 	q += " FROM " + p.Resource
 
+	innerJoins, err := innerJoinsFromParams(p)
+	if err != nil {
+		return "", err
+	}
+	q += innerJoins
+
 	wheres, err := filtersFromParams(p)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	q += wheres
 
 	sorts, err := sortsFromParams(p)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	q += sorts
 
-	innerJoins, err := innerJoinsFromParams(p)
+	q += limitsFromParams(p) + ";"
+	// fmt.Println(q, p)
+	return q, nil
+}
+
+// func Fetch(p *FetchParams) ([]db.TypedTables, error) {
+func Fetch(p *FetchParams) ([]map[string]map[string]interface{}, error) {
+	q, err := FetchQuery(p)
 	if err != nil {
 		return nil, err
 	}
-	q += innerJoins
+	// var data []db.TypedTables
+	// err = db.DB.Select(&data, q)
+	// return data, err
 
-	q += limitsFromParams(p) + ";"
-	fmt.Println(q, p)
-	return db.SelectGenericRows(q)
+	// return db.SelectGenericRowsAsMap(q)
+	return db.SelectGenericRowsx(q)
 }

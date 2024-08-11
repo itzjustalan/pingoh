@@ -36,7 +36,7 @@ func NewJwtTokens(id int, role string, access db.UserAccess) (JwtTokens, error) 
 			Issuer:    issuer,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 2)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 12)),
 		},
 	}).SignedString([]byte(secret))
 	if err != nil {

@@ -22,6 +22,7 @@ func ConnectDB(dbfile *string) {
 
 	// connection pool options
 	DB.SetMaxIdleConns(4)
+	DB.SetMaxOpenConns(10)
 
 	// create tables
 	err = createUsersTable()
