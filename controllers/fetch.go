@@ -16,7 +16,7 @@ import (
 // f: filters,
 // ij: innerJoins,
 type FetchParams struct {
-	Resource  string `query:"r" validate:"required,oneof=tasks"`
+	Resource  string `query:"r" validate:"required,oneof=users tasks http_tasks http_auths http_results"`
 	Id        int    `query:"i" vlaidate:"omitempty,gte=1"`
 	PageSize  int    `query:"l" validate:"omitempty,gte=1"`
 	PageCount int    `query:"c" validate:"omitempty,gte=1"`
@@ -102,6 +102,20 @@ var FetchConfig = map[string]resourceConfig{
 	},
 }
 
+func selectAllowedFiledsOf(resource string) (string, error) {
+	config, ok := FetchConfig[resource]
+	if !ok {
+		return "", fmt.Errorf("invalid resource")
+	}
+	keys := make([]string, 0, len(config.Fields))
+	for key := range config.Fields {
+		keys = append(keys, config.Table+"."+key)
+	}
+	return strings.Join(keys, ", "), nil
+}
+
+// func filtersFromParams(p *FetchParams) string {}
+
 func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	q := "SELECT "
 	config, ok := FetchConfig[p.Resource]
@@ -112,18 +126,17 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	if p.Count {
 		q += "COUNT(*) AS count"
 	} else {
-		keys := make([]string, 0, len(config.Fields))
-		for key := range config.Fields {
-			keys = append(keys, config.Table+"."+key)
+		selectFields, err := selectAllowedFiledsOf(p.Resource)
+		if err != nil {
+			return nil, err
 		}
-		selectFields := strings.Join(keys, ", ")
 		q += selectFields
 	}
 	q += " FROM " + p.Resource
 	wheres := " WHERE"
 	wheres_added := false
 	if p.Id > 0 {
-		wheres += " id = " + strconv.Itoa(p.Id)
+		wheres += " " + config.Table + ".id = " + strconv.Itoa(p.Id)
 		wheres_added = true
 	}
 	for k, v := range config.Fields {
@@ -139,9 +152,9 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 			continue
 		}
 		if v == "string" {
-			wheres += " " + k + " LIKE '" + f + "%'"
+			wheres += " " + config.Table + "." + k + " LIKE '" + f + "%'"
 		} else {
-			wheres += " " + k + " = '" + f + "'"
+			wheres += " " + config.Table + "." + k + " = '" + f + "'"
 		}
 		wheres_added = true
 	}
@@ -150,15 +163,15 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	}
 	sorts := " ORDER BY"
 	sorts_added := false
-	for _, v := range config.Fields {
-		s, ok := p.M["s["+v+"]"]
+	for k := range config.Fields {
+		s, ok := p.M["s["+k+"]"]
 		if !ok {
 			continue
 		}
 		if sorts_added {
 			sorts += ","
 		}
-		sorts += " " + v
+		sorts += " " + config.Table + "." + k
 		if s == "d" {
 			sorts += " DESC"
 		} else {
@@ -169,6 +182,9 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	if sorts_added {
 		q += sorts
 	}
+	// innerJoins := ""
+	// innerJoins_added := false
+	// for _, v := range config.Fields {}
 	if p.PageSize > 0 {
 		q += " LIMIT " + strconv.Itoa(p.PageSize)
 	} else {
