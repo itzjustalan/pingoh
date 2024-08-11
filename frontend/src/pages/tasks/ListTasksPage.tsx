@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Button, Spin, Table, type TableProps, Tag, Typography } from "antd";
 import { useFetchParams } from "../../lib/hooks/fetch";
-import type { Task } from "../../lib/models/db/task";
 import { tasksNetwork } from "../../lib/networks/tasks";
+import type { FetchType } from "../../lib/models/db/fetch";
 
 export const ListTasksPage = () => {
   const navigate = useNavigate({ from: "/tasks" });
@@ -24,20 +24,20 @@ export const ListTasksPage = () => {
       }),
   });
 
-  const columns: TableProps<Task>["columns"] = [
+  const columns: TableProps<FetchType>["columns"] = [
     {
       title: "ID",
-      dataIndex: "id",
+      dataIndex: ["tasks", "id"],
       key: "id",
     },
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: ["tasks", "name"],
       key: "name",
     },
     {
       title: "Status",
-      dataIndex: "active",
+      dataIndex: ["tasks", "active"],
       key: "active",
       render: (active: boolean) => (
         <Tag color={active ? "green" : "red"}>
@@ -70,7 +70,7 @@ export const ListTasksPage = () => {
               onClick: () => {
                 navigate({
                   to: "/tasks/$taskId",
-                  params: { taskId: row.id.toString() },
+                  params: { taskId: row.tasks.id.toString() },
                 });
               },
             };

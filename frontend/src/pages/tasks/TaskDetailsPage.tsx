@@ -19,7 +19,9 @@ export const TaskDetailsPage = () => {
 
   return (
     <>
-      <Typography.Title level={2}>{taskQuery.data[0].name}</Typography.Title>
+      <Typography.Title level={2}>
+        {taskQuery.data[0].tasks.name}
+      </Typography.Title>
       {taskId}
       {JSON.stringify(taskQuery.data[0])}
     </>

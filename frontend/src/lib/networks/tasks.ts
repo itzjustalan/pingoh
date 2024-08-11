@@ -1,10 +1,10 @@
-import { type NewTask, type Task, createTaskSchema } from "../models/db/task";
+import type { FetchType } from "../models/db/fetch";
+import { type NewTask, createTaskSchema } from "../models/db/task";
 import {
   type FetchParams,
   fetchQuerySchema,
   qStringFromParams,
 } from "../models/inputs/fetch";
-import { sleep } from "../utils";
 import backendApi from "./apis/backend";
 
 class TasksNetwork {
@@ -18,10 +18,10 @@ class TasksNetwork {
     const res = await backendApi.post<NewTask>("/tasks", task);
     return res.data;
   };
-  fetch = async (params?: Omit<FetchParams, "r">): Promise<Task[]> => {
+  fetch = async (params?: Omit<FetchParams, "r">) => {
     const qParams = fetchQuerySchema.parse({ ...params, r: "tasks" });
     const q = qStringFromParams(qParams);
-    const res = await backendApi.get<Task[]>(`/shared/fetch?${q}`);
+    const res = await backendApi.get<FetchType[]>(`/shared/fetch?${q}`);
     return res.data ?? [];
   };
 }
