@@ -1,27 +1,27 @@
-import { type TaskModel, taskModelSchema } from "../models/db/task";
+import { type NewTask, type Task, createTaskSchema } from "../models/db/task";
 import {
-  fetchQuerySchema,
   type FetchParams,
+  fetchQuerySchema,
   qStringFromParams,
 } from "../models/inputs/fetch";
 import { sleep } from "../utils";
 import backendApi from "./apis/backend";
 
 class TasksNetwork {
-  // create = async <T extends TaskModel>(data: T): Promise<T> => {
-  //   taskModelSchema.parse(data);
+  // dcreate = async <T extends NewTask>(data: T): Promise<T> => {
+  //   createTaskModelSchema.parse(data);
   //   const res = await backendApi.post<T>("/tasks", data);
   //   return res.data;
   // };
-  create = async (data: TaskModel): Promise<TaskModel> => {
-    taskModelSchema.parse(data);
-    const res = await backendApi.post<TaskModel>("/tasks", data);
+  create = async (data: NewTask): Promise<NewTask> => {
+    const task = createTaskSchema.parse(data);
+    const res = await backendApi.post<NewTask>("/tasks", task);
     return res.data;
   };
-  fetch = async (params?: Omit<FetchParams, "r">): Promise<TaskModel[]> => {
-    await sleep(1000 * 2);
-    const q = qStringFromParams({ ...params, r: "tasks" });
-    const res = await backendApi.get<TaskModel[]>(`/shared/fetch?${q}`);
+  fetch = async (params?: Omit<FetchParams, "r">): Promise<Task[]> => {
+    const qParams = fetchQuerySchema.parse({ ...params, r: "tasks" });
+    const q = qStringFromParams(qParams);
+    const res = await backendApi.get<Task[]>(`/shared/fetch?${q}`);
     return res.data ?? [];
   };
 }

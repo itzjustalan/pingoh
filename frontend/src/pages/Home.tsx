@@ -8,11 +8,11 @@ export const Home: React.FC = () => {
       {env.baseUrl}
       <br />
       {window.location.host}
-        <br />
+      <br />
       <Link to={"/tasks"} className="[&.active]:font-bold">
         list tasks
       </Link>
-        <br />
+      <br />
       <p>Welcome to the Home page!</p>
     </div>
   );

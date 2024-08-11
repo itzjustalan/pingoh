@@ -19,8 +19,7 @@ const zodStringOneOf = (values: string[]) =>
 const zodUniqueArray = (schema: z.ZodTypeAny) =>
   z.array(schema).refine((v) => new Set(v).size === v.length);
 
-export type TaskModel = z.infer<typeof taskModelSchema>;
-export const taskModelSchema = z
+export const createTaskSchema = z
   .object({
     name: z.string(),
     type: zodStringEquals("http"),
@@ -41,3 +40,5 @@ export const taskModelSchema = z
     }),
   })
   .strict();
+export type NewTask = z.infer<typeof createTaskSchema>;
+export type Task = NewTask & { id: number; created_at: string };

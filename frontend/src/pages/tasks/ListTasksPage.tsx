@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { tasksNetwork } from "../../lib/networks/tasks";
+import { useNavigate } from "@tanstack/react-router";
+import { Button, Spin, Table, type TableProps, Tag, Typography } from "antd";
 import { useFetchParams } from "../../lib/hooks/fetch";
-import { Spin, Table, type TableProps, Tag, Typography } from "antd";
-import type { TaskModel } from "../../lib/models/db/task";
+import type { Task } from "../../lib/models/db/task";
+import { tasksNetwork } from "../../lib/networks/tasks";
 
 export const ListTasksPage = () => {
+  const navigate = useNavigate({ from: "/tasks" });
   const { limit, setLimit, count, setCount, sort, setSort, filter, setFilter } =
     useFetchParams({
       r: "tasks",
       l: 10,
-      c: 0,
+      c: 1,
     });
   const tasksQuery = useQuery({
     queryKey: ["fetch", "tasks", limit, count, sort, filter],
@@ -21,7 +23,8 @@ export const ListTasksPage = () => {
         f: filter,
       }),
   });
-  const columns: TableProps<TaskModel>["columns"] = [
+
+  const columns: TableProps<Task>["columns"] = [
     {
       title: "ID",
       dataIndex: "id",
@@ -43,13 +46,36 @@ export const ListTasksPage = () => {
       ),
     },
   ];
+  console.log(tasksQuery.error);
+
   return (
     <>
       <Typography.Title level={2}>
         Tasks {tasksQuery.isLoading && <Spin />}
       </Typography.Title>
+      <Button
+        htmlType="button"
+        onClick={() => {
+          setSort({ id: "d" });
+        }}
+      >
+        sort
+      </Button>
       {tasksQuery.isLoading ? null : (
-        <Table dataSource={tasksQuery.data} columns={columns} />
+        <Table
+          dataSource={tasksQuery.data}
+          columns={columns}
+          onRow={(row) => {
+            return {
+              onClick: () => {
+                navigate({
+                  to: "/tasks/$taskId",
+                  params: { taskId: row.id.toString() },
+                });
+              },
+            };
+          }}
+        />
       )}
     </>
   );

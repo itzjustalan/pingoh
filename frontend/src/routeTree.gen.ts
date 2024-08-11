@@ -21,6 +21,7 @@ const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 const TasksIndexLazyImport = createFileRoute('/tasks/')()
 const TasksNewLazyImport = createFileRoute('/tasks/new')()
+const TasksTaskIdLazyImport = createFileRoute('/tasks/$taskId')()
 
 // Create/Update Routes
 
@@ -43,6 +44,11 @@ const TasksNewLazyRoute = TasksNewLazyImport.update({
   path: '/tasks/new',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/tasks.new.lazy').then((d) => d.Route))
+
+const TasksTaskIdLazyRoute = TasksTaskIdLazyImport.update({
+  path: '/tasks/$taskId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/tasks.$taskId.lazy').then((d) => d.Route))
 
 const AuthSigninRoute = AuthSigninImport.update({
   path: '/auth/signin',
@@ -74,6 +80,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSigninImport
       parentRoute: typeof rootRoute
     }
+    '/tasks/$taskId': {
+      id: '/tasks/$taskId'
+      path: '/tasks/$taskId'
+      fullPath: '/tasks/$taskId'
+      preLoaderRoute: typeof TasksTaskIdLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/tasks/new': {
       id: '/tasks/new'
       path: '/tasks/new'
@@ -97,6 +110,7 @@ export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AboutLazyRoute,
   AuthSigninRoute,
+  TasksTaskIdLazyRoute,
   TasksNewLazyRoute,
   TasksIndexLazyRoute,
 })
@@ -112,6 +126,7 @@ export const routeTree = rootRoute.addChildren({
         "/",
         "/about",
         "/auth/signin",
+        "/tasks/$taskId",
         "/tasks/new",
         "/tasks/"
       ]
@@ -124,6 +139,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/auth/signin": {
       "filePath": "auth.signin.tsx"
+    },
+    "/tasks/$taskId": {
+      "filePath": "tasks.$taskId.lazy.tsx"
     },
     "/tasks/new": {
       "filePath": "tasks.new.lazy.tsx"
