@@ -114,25 +114,11 @@ func selectAllowedFiledsOf(resource string) (string, error) {
 	return strings.Join(keys, ", "), nil
 }
 
-// func filtersFromParams(p *FetchParams) string {}
-
-func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
-	q := "SELECT "
+func filtersFromParams(p *FetchParams) (string, error) {
 	config, ok := FetchConfig[p.Resource]
 	if !ok {
-		// TODO: create custom httperror
-		return nil, fmt.Errorf("invalid resource")
+		return "", fmt.Errorf("invalid resource")
 	}
-	if p.Count {
-		q += "COUNT(*) AS count"
-	} else {
-		selectFields, err := selectAllowedFiledsOf(p.Resource)
-		if err != nil {
-			return nil, err
-		}
-		q += selectFields
-	}
-	q += " FROM " + p.Resource
 	wheres := " WHERE"
 	wheres_added := false
 	if p.Id > 0 {
@@ -152,14 +138,25 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 			continue
 		}
 		if v == "string" {
-			wheres += " " + config.Table + "." + k + " LIKE '" + f + "%'"
+			// TODO: check if "f" has any uppercase letters first lol be smort!
+			wheres += " LOWER(" + config.Table + "." + k + ") LIKE '" + f + "%'"
 		} else {
 			wheres += " " + config.Table + "." + k + " = '" + f + "'"
 		}
 		wheres_added = true
 	}
+
 	if wheres_added {
-		q += wheres
+		return wheres, nil
+	} else {
+		return "", nil
+	}
+}
+
+func sortsFromParams(p *FetchParams) (string, error) {
+	config, ok := FetchConfig[p.Resource]
+	if !ok {
+		return "", fmt.Errorf("invalid resource")
 	}
 	sorts := " ORDER BY"
 	sorts_added := false
@@ -179,23 +176,96 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 		}
 		sorts_added = true
 	}
+
 	if sorts_added {
-		q += sorts
-	}
-	// innerJoins := ""
-	// innerJoins_added := false
-	// for _, v := range config.Fields {}
-	if p.PageSize > 0 {
-		q += " LIMIT " + strconv.Itoa(p.PageSize)
+		return sorts, nil
 	} else {
-		q += " LIMIT 10"
+		return "", nil
 	}
-	if p.PageCount > 0 {
-		q += " OFFSET " + strconv.Itoa(p.PageSize*(p.PageCount-1))
+}
+
+func innerJoinsFromParams(p *FetchParams) (string, error) {
+	config, ok := FetchConfig[p.Resource]
+	if !ok {
+		return "", fmt.Errorf("invalid resource")
+	}
+	innerJoins := ""
+	innerJoins_added := false
+
+	for k := range config.Fields {
+		f, ok := p.M["ij["+k+"]"]
+		if !ok {
+			continue
+		}
+		table := strings.Split(f, ".")[0]
+		_, ok = FetchConfig[table]
+		if !ok {
+			continue
+		}
+		innerJoins += " INNER JOIN " + table + " ON " + f + " = " + config.Table + "." + k
+		innerJoins_added = true
+	}
+
+	if innerJoins_added {
+		return innerJoins, nil
 	} else {
-		q += " OFFSET 0"
+		return "", nil
 	}
-	q += ";"
+}
+
+func limitsFromParams(p *FetchParams) string {
+	if p.PageSize < 1 {
+		p.PageSize = 10
+	}
+	if p.PageCount < 1 {
+		p.PageCount = 1
+	}
+	return " LIMIT " + strconv.Itoa(p.PageSize) + " OFFSET " + strconv.Itoa(p.PageSize*(p.PageCount-1))
+}
+
+func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
+	q := "SELECT "
+
+	if p.Count {
+		q += "COUNT(*) AS count"
+	} else {
+		selectFields, err := selectAllowedFiledsOf(p.Resource)
+		if err != nil {
+			return nil, err
+		}
+		q += selectFields
+		for k, v := range p.M {
+			if strings.HasPrefix(k, "ij[") {
+				table := strings.Split(v, ".")[0]
+				fields, err := selectAllowedFiledsOf(table)
+				if err != nil {
+					return nil, err
+				}
+				q += ", " + fields
+			}
+		}
+	}
+	q += " FROM " + p.Resource
+
+	wheres, err := filtersFromParams(p)
+	if err != nil {
+		return nil, err
+	}
+	q += wheres
+
+	sorts, err := sortsFromParams(p)
+	if err != nil {
+		return nil, err
+	}
+	q += sorts
+
+	innerJoins, err := innerJoinsFromParams(p)
+	if err != nil {
+		return nil, err
+	}
+	q += innerJoins
+
+	q += limitsFromParams(p) + ";"
 	fmt.Println(q, p)
 	return db.SelectGenericRows(q)
 }
