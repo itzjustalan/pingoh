@@ -30,13 +30,75 @@ type FetchParams struct {
 
 type resourceConfig struct {
 	Table  string
-	Fields []string
+	Fields map[string]string
 }
 
 var FetchConfig = map[string]resourceConfig{
+	"users": {
+		Table: "users",
+		Fields: map[string]string{
+			"id":         "int",
+			"name":       "string",
+			"email":      "string",
+			"role":       "string",
+			"access":     "json",
+			"created_at": "time",
+		},
+	},
 	"tasks": {
-		Table:  "tasks",
-		Fields: []string{"id", "name", "active", "repeat", "interval", "description", "type", "tags", "created_at"},
+		Table: "tasks",
+		Fields: map[string]string{
+			"id":          "int",
+			"name":        "string",
+			"active":      "bool",
+			"repeat":      "bool",
+			"interval":    "int",
+			"description": "string",
+			"type":        "string",
+			"tags":        "json",
+			"created_at":  "time",
+		},
+	},
+	"http_tasks": {
+		Table: "http_tasks",
+		Fields: map[string]string{
+			"id":                    "int",
+			"task_id":               "int",
+			"method":                "string",
+			"url":                   "string",
+			"body":                  "string",
+			"headers":               "json",
+			"encoding":              "string",
+			"retries":               "int",
+			"timeout":               "int",
+			"accepted_status_codes": "json",
+			"auth_method":           "string",
+		},
+	},
+	"http_auths": {
+		Table: "http_auths",
+		Fields: map[string]string{
+			"id":                  "int",
+			"task_id":             "int",
+			"username":            "string",
+			"password":            "string",
+			"oauth_method":        "string",
+			"oauth_url":           "string",
+			"oauth_client_id":     "string",
+			"oauth_client_secret": "string",
+			"oauth_scope":         "string",
+		},
+	},
+	"http_results": {
+		Table: "http_results",
+		Fields: map[string]string{
+			"id":          "int",
+			"task_id":     "int",
+			"code":        "int",
+			"ok":          "bool",
+			"duration_ns": "int",
+			"created_at":  "time",
+		},
 	},
 }
 
@@ -50,7 +112,11 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 	if p.Count {
 		q += "COUNT(*) AS count"
 	} else {
-		selectFields := strings.Join(config.Fields, ", ")
+		keys := make([]string, 0, len(config.Fields))
+		for key := range config.Fields {
+			keys = append(keys, config.Table+"."+key)
+		}
+		selectFields := strings.Join(keys, ", ")
 		q += selectFields
 	}
 	q += " FROM " + p.Resource
@@ -60,8 +126,8 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 		wheres += " id = " + strconv.Itoa(p.Id)
 		wheres_added = true
 	}
-	for _, v := range config.Fields {
-		f, ok := p.M["f["+v+"]"]
+	for k, v := range config.Fields {
+		f, ok := p.M["f["+k+"]"]
 		if !ok {
 			continue
 		}
@@ -72,7 +138,11 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 			// TODO: create custom httperror
 			continue
 		}
-		wheres += " " + v + " = '" + f + "'"
+		if v == "string" {
+			wheres += " " + k + " LIKE '" + f + "%'"
+		} else {
+			wheres += " " + k + " = '" + f + "'"
+		}
 		wheres_added = true
 	}
 	if wheres_added {
