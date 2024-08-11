@@ -20,6 +20,7 @@ type FetchParams struct {
 	Id        int    `query:"i" vlaidate:"omitempty,gte=1"`
 	PageSize  int    `query:"l" validate:"omitempty,gte=1"`
 	PageCount int    `query:"c" validate:"omitempty,gte=1"`
+	Count     bool   `query:"count" validate:"omitempty"`
 	M         map[string]string
 }
 
@@ -46,8 +47,12 @@ func Fetch(p *FetchParams) ([]map[string]interface{}, error) {
 		// TODO: create custom httperror
 		return nil, fmt.Errorf("invalid resource")
 	}
-	selectFields := strings.Join(config.Fields, ", ")
-	q += selectFields
+	if p.Count {
+		q += "COUNT(*) AS count"
+	} else {
+		selectFields := strings.Join(config.Fields, ", ")
+		q += selectFields
+	}
 	q += " FROM " + p.Resource
 	wheres := " WHERE"
 	wheres_added := false

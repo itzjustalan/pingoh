@@ -1,4 +1,10 @@
 import { type TaskModel, taskModelSchema } from "../models/db/task";
+import {
+  fetchQuerySchema,
+  type FetchParams,
+  qStringFromParams,
+} from "../models/inputs/fetch";
+import { sleep } from "../utils";
 import backendApi from "./apis/backend";
 
 class TasksNetwork {
@@ -11,6 +17,12 @@ class TasksNetwork {
     taskModelSchema.parse(data);
     const res = await backendApi.post<TaskModel>("/tasks", data);
     return res.data;
+  };
+  fetch = async (params?: Omit<FetchParams, "r">): Promise<TaskModel[]> => {
+    await sleep(1000 * 2);
+    const q = qStringFromParams({ ...params, r: "tasks" });
+    const res = await backendApi.get<TaskModel[]>(`/shared/fetch?${q}`);
+    return res.data ?? [];
   };
 }
 
