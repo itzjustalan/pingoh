@@ -31,6 +31,7 @@ export const CreateTaskPage = () => {
     mutationFn: tasksNetwork.create,
     onSuccess: () => {
       messageApi.success("Task created");
+      form.reset()
     },
     onError: (error) => {
       messageApi.error(error.message ?? "Error creating Task");

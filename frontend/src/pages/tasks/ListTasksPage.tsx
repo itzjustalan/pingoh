@@ -7,7 +7,8 @@ import type { FetchType } from "../../lib/models/db/fetch";
 
 export const ListTasksPage = () => {
   const navigate = useNavigate({ from: "/tasks" });
-  const { limit, setLimit, count, setCount, sort, setSort, filter, setFilter } =
+  // const { limit, setLimit, count, setCount, sort, setSort, filter, setFilter } =
+  const { limit, count, sort, setSort, filter } =
     useFetchParams({
       r: "tasks",
       l: 10,

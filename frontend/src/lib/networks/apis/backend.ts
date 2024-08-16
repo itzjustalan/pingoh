@@ -5,7 +5,8 @@ import { authStore } from "../../stores/auth";
 export { type AxiosInstance } from "axios";
 
 const backendApi: AxiosInstance = axios.create({
-  baseURL: `http://${env.dev ? "localhost:3000" : window.location.host}/api`,
+  // baseURL: `http://${env.dev ? "localhost:3000" : window.location.host}/api`,
+  baseURL: `http://${env.backend.baseUrl}/api`,
 });
 
 backendApi.defaults.headers.common["Content-Type"] = "application/json";

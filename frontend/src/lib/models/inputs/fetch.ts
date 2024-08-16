@@ -7,6 +7,7 @@ export const fetchQuerySchema = z.object({
   c: z.coerce.number().gte(1).optional(),
   s: z.record(z.string(), z.enum(["a", "d"])).optional(),
   f: z.record(z.string(), z.coerce.string()).optional(),
+  ij: z.record(z.string(), z.coerce.string()).optional(),
 });
 
 export type FetchParams = z.infer<typeof fetchQuerySchema>;
