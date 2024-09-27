@@ -14,6 +14,6 @@ export const env = {
     test: strictLoad("VITE_TEST"),
   },
   backend: {
-    baseUrl: import.meta.env.DEV ? "localhost:3000" : window.location.host,
+    baseUrl: import.meta.env.DEV ? "127.0.0.1:3000" : window.location.host,
   },
 };

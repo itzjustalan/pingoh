@@ -24,7 +24,7 @@ class TasksNetwork {
     const res = await backendApi.get<FetchType[]>(`/shared/fetch?${q}`);
     return res.data ?? [];
   };
-  subscribe = (taskId: number) => {
+  subscribe = (_taskId: number) => {
     // const ws = new WebSocket("ws://localhost:8080/ws");
     // const ws = new WebSocket(
     //   `ws://${env.backend.baseUrl}/api/stats/ws/task/${taskId}?token=${authStore.getState().user?.access_token}`,
