@@ -52,18 +52,21 @@ type HttpAuth struct {
 	TaskID int `json:"task_id" db:"task_id"`
 }
 
-type TaskType string
-type TaskTags []string
-type HttpTaskStatusCodes []int
-type HttpTaskMethod string
-type HttpTaskAuthMethod string
-type HttpTaskHeaders map[string]string
-type HttpTaskBodyEncoding string
-type HttpOAuth2AuthMethod string
+type (
+	TaskType             string
+	TaskTags             []string
+	HttpTaskStatusCodes  []int
+	HttpTaskMethod       string
+	HttpTaskAuthMethod   string
+	HttpTaskHeaders      map[string]string
+	HttpTaskBodyEncoding string
+	HttpOAuth2AuthMethod string
+)
 
 func (v TaskTags) Value() (driver.Value, error) {
 	return jsonSqlValuer(v)
 }
+
 func (v *TaskTags) Scan(src interface{}) error {
 	return jsonSqlScanner(v, src)
 }
@@ -71,6 +74,7 @@ func (v *TaskTags) Scan(src interface{}) error {
 func (v HttpTaskStatusCodes) Value() (driver.Value, error) {
 	return jsonSqlValuer(v)
 }
+
 func (v *HttpTaskStatusCodes) Scan(src interface{}) error {
 	return jsonSqlScanner(v, src)
 }
@@ -78,6 +82,7 @@ func (v *HttpTaskStatusCodes) Scan(src interface{}) error {
 func (v HttpTaskHeaders) Value() (driver.Value, error) {
 	return jsonSqlValuer(v)
 }
+
 func (v *HttpTaskHeaders) Scan(src interface{}) error {
 	return jsonSqlScanner(v, src)
 }
@@ -95,6 +100,7 @@ const (
 	HttpTaskMethodHead    HttpTaskMethod = "HEAD"
 	HttpTaskMethodOptions HttpTaskMethod = "OPTIONS"
 )
+
 const (
 	HttpOAuth2AuthMethodHeader HttpOAuth2AuthMethod = "header"
 	HttpOAuth2AuthMethodForm   HttpOAuth2AuthMethod = "form"
@@ -286,6 +292,12 @@ func ActivateTaskByID(id int) error {
 
 func DeactivateTaskByID(id int) error {
 	q := `UPDATE tasks SET active = false WHERE id = ?`
+	_, err := DB.Exec(q, id)
+	return err
+}
+
+func DeleteTaskByID(id int) error {
+	q := `DELETE FROM tasks WHERE id = ?`
 	_, err := DB.Exec(q, id)
 	return err
 }

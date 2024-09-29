@@ -39,4 +39,22 @@ func addTaskRoutes(api *fiber.Router) {
 		log.Info().Msgf("Deactivating task with ID: %d", id)
 		return controllers.DeactivateTaskByID(id)
 	})
+
+	r.Get("/:task_id/toggle", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("task_id")
+		if err != nil {
+			return err
+		}
+		log.Info().Msgf("Toggling task with ID: %d", id)
+		return controllers.ToggleTaskByID(id)
+	})
+
+	r.Delete("/:task_id", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("task_id")
+		if err != nil {
+			return err
+		}
+		log.Info().Msgf("Deleting task with ID: %d", id)
+		return controllers.DeleteTaskByID(id)
+	})
 }

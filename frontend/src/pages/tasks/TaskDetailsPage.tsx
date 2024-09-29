@@ -1,12 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import { getRouteApi } from "@tanstack/react-router";
-import { Button, Card, Divider, Spin, Tag, Typography } from "antd";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
+import {
+  Button,
+  Card,
+  Divider,
+  Flex,
+  Popconfirm,
+  Spin,
+  Tag,
+  Typography,
+} from "antd";
 import { tasksNetwork } from "../../lib/networks/tasks";
-// import { authStore } from "../../lib/stores/auth";
 
 const route = getRouteApi("/tasks/$taskId");
 export const TaskDetailsPage = () => {
   const { taskId } = route.useParams();
+  const navigate = useNavigate({ from: "/tasks/$taskId" });
 
   const taskQuery = useQuery({
     queryKey: ["fetch", "tasks", taskId],
@@ -19,15 +28,59 @@ export const TaskDetailsPage = () => {
       }),
   });
 
+  const toggleTask = useMutation({
+    mutationKey: ["task", taskId, "toggle"],
+    mutationFn: tasksNetwork.toggle,
+    onSuccess: () => {
+      taskQuery.refetch();
+    },
+  });
+
+  const deleteTask = useMutation({
+    mutationKey: ["task", taskId, "delete"],
+    mutationFn: tasksNetwork.delete,
+    onSuccess: () => {
+      navigate({
+        to: "/tasks",
+      });
+    },
+  });
+
   if (taskQuery.isLoading) return <Spin />;
   if (taskQuery.isError || !taskQuery.data?.length)
     return <Typography.Title level={2}>Task not found</Typography.Title>;
 
+  const greenColor = "#5FF55A";
   const taskData = taskQuery.data[0];
   return (
     <>
       <Card>
-        <Typography.Title level={2}>{taskData.tasks.name}</Typography.Title>
+        <Flex justify="space-between" align="center">
+          <Typography.Title level={2}>{taskData.tasks.name}</Typography.Title>
+          <p>
+            <Button
+              htmlType="button"
+              onClick={() => toggleTask.mutateAsync(taskData.tasks.id)}
+              style={{
+                color: !taskData.tasks.active ? greenColor : "red",
+                borderColor: !taskData.tasks.active ? greenColor : "red",
+              }}
+            >
+              {!taskData.tasks.active ? "Activate" : "Deactivate"}
+            </Button>{" "}
+            <Popconfirm
+              title="Delete the task"
+              description="Are you sure you want to delete this task?"
+              onConfirm={async () =>
+                await deleteTask.mutateAsync(taskData.tasks.id)
+              }
+            >
+              <Button htmlType="button" type="primary" danger>
+                Delete
+              </Button>
+            </Popconfirm>
+          </p>
+        </Flex>
         <Divider />
         <p>
           <Typography.Text type="secondary">

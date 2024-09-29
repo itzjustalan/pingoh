@@ -24,6 +24,22 @@ class TasksNetwork {
     const res = await backendApi.get<FetchType[]>(`/shared/fetch?${q}`);
     return res.data ?? [];
   };
+  activate = async (taskId: number): Promise<void> => {
+    const res = await backendApi.post(`/tasks/${taskId}/activate`);
+    return res.data;
+  };
+  deactivate = async (taskId: number): Promise<void> => {
+    const res = await backendApi.post(`/tasks/${taskId}/deactivate`);
+    return res.data;
+  };
+  toggle = async (taskId: number): Promise<void> => {
+    const res = await backendApi.get(`/tasks/${taskId}/toggle`);
+    return res.data;
+  };
+  delete = async (taskId: number): Promise<void> => {
+    const res = await backendApi.delete(`/tasks/${taskId}`);
+    return res.data;
+  };
   subscribe = (_taskId: number) => {
     // const ws = new WebSocket("ws://localhost:8080/ws");
     // const ws = new WebSocket(

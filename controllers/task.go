@@ -1,12 +1,11 @@
 package controllers
 
 import (
+	"pingoh/db"
+	"pingoh/services"
 	"slices"
 	"sync"
 	"time"
-
-	"pingoh/db"
-	"pingoh/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -182,6 +181,26 @@ func DeactivateTaskByID(tid int) error {
 		v.Deactivate()
 	}
 	return db.DeactivateTaskByID(tid)
+}
+
+func ToggleTaskByID(tid int) error {
+	task, err := db.GetTaskByID(tid)
+	if err != nil {
+		return err
+	}
+
+	if task.Active {
+		return DeactivateTaskByID(tid)
+	} else {
+		return ActivateTaskByID(tid)
+	}
+}
+
+func DeleteTaskByID(tid int) error {
+	if v, ok := TaskChannels[tid]; ok {
+		v.Deactivate()
+	}
+	return db.DeleteTaskByID(tid)
 }
 
 func startTask(t db.Task) {
