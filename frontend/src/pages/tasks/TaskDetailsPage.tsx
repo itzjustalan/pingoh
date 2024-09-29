@@ -11,6 +11,7 @@ import {
   Typography,
 } from "antd";
 import { tasksNetwork } from "../../lib/networks/tasks";
+import { Favicon } from "../../components/favicon";
 
 const route = getRouteApi("/tasks/$taskId");
 export const TaskDetailsPage = () => {
@@ -56,7 +57,9 @@ export const TaskDetailsPage = () => {
     <>
       <Card>
         <Flex justify="space-between" align="center">
-          <Typography.Title level={2}>{taskData.tasks.name}</Typography.Title>
+          <Typography.Title level={1}>
+            <Favicon url={taskData.http_tasks.url} /> {taskData.tasks.name}
+          </Typography.Title>
           <p>
             <Button
               htmlType="button"

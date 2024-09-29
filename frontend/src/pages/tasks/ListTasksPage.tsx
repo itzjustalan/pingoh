@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Spin, Table, type TableProps, Tag, Typography } from "antd";
+import { Spin, Table, type TableProps, Tag, Typography, Flex } from "antd";
 import { useFetchParams } from "../../lib/hooks/fetch";
 import type { FetchType } from "../../lib/models/db/fetch";
 import { tasksNetwork } from "../../lib/networks/tasks";
+import { Favicon } from "../../components/favicon";
 
 export const ListTasksPage = () => {
   const navigate = useNavigate({ from: "/tasks" });
@@ -21,6 +22,9 @@ export const ListTasksPage = () => {
         c: count,
         s: sort,
         f: filter,
+        ij: {
+          id: "http_tasks.task_id",
+        },
       }),
   });
 
@@ -34,6 +38,15 @@ export const ListTasksPage = () => {
       title: "Name",
       dataIndex: ["tasks", "name"],
       key: "name",
+      render: (name, record) => (
+        <Typography.Text
+          style={{
+            fontSize: 28,
+          }}
+        >
+          <Favicon url={record.http_tasks.url} /> {name}
+        </Typography.Text>
+      ),
     },
     {
       title: "Status",
@@ -43,6 +56,16 @@ export const ListTasksPage = () => {
         <Tag color={active ? "green" : "red"}>
           {active ? "Active" : "Inactive"}
         </Tag>
+      ),
+    },
+    {
+      title: "URL",
+      dataIndex: ["http_tasks", "url"],
+      key: "url",
+      render: (url) => (
+        <Typography.Link href={url} target="_blank">
+          {url}
+        </Typography.Link>
       ),
     },
   ];

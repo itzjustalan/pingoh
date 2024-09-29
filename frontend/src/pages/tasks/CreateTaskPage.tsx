@@ -1,10 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Card, Flex, Spin, message } from "antd";
-import { InputField } from "../../components/form/InputField";
-import { tasksNetwork } from "../../lib/networks/tasks";
 import { zodValidator } from "@tanstack/zod-form-adapter";
+import { Button, Card, Divider, Flex, Spin, Typography, message } from "antd";
+import { InputField } from "../../components/form/InputField";
 import { createTaskSchema } from "../../lib/models/db/task";
+import { tasksNetwork } from "../../lib/networks/tasks";
 
 const defaultValues = {
   name: "",
@@ -52,20 +52,21 @@ export const CreateTaskPage = () => {
     },
   });
 
-  const fillForm = () => {
-    form.setFieldValue("name", "test");
-    form.setFieldValue("interval", 60);
-    form.setFieldValue("description", "test task");
-    form.setFieldValue("http.url", "https://example.com");
-  };
+  // const fillForm = () => {
+  //   form.setFieldValue("name", "test");
+  //   form.setFieldValue("interval", 60);
+  //   form.setFieldValue("description", "test task");
+  //   form.setFieldValue("http.url", "https://example.com");
+  // };
 
   return (
     <>
       {contextHolder}
-      <h1>Create Task</h1>
-      <Button htmlType="button" onClick={fillForm}>
-        Fill
-      </Button>
+      <Typography.Title level={2}>Create Task</Typography.Title>
+      <Divider />
+      {/* <Button htmlType="button" onClick={fillForm}> */}
+      {/*   Fill */}
+      {/* </Button> */}
       <Card style={{ maxWidth: "50vw", margin: "0 auto" }}>
         <form
           onSubmit={(e) => {
