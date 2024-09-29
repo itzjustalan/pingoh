@@ -25,7 +25,7 @@ export const createTaskSchema = z
     type: zodStringEquals("http"),
     repeat: z.boolean(),
     active: z.boolean(),
-    interval: z.number().gte(1), // seconds
+    interval: z.coerce.number().gte(1), // seconds
     description: z.string(),
     tags: zodUniqueArray(z.string()),
     http: z.object({
@@ -33,8 +33,8 @@ export const createTaskSchema = z
       url: z.string().url(),
       encoding: zodStringOneOf(httpAllowedEncodings),
       headers: z.object({}),
-      retries: z.number().gte(0),
-      timeout: z.number().gte(0), // seconds
+      retries: z.coerce.number().gte(0),
+      timeout: z.coerce.number().gte(0), // seconds
       accepted_status_codes: z.number().gte(100).lt(600).array(),
       auth_method: zodStringOneOf(["none", "basic", "oauth2"]),
     }),

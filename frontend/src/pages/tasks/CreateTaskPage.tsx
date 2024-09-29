@@ -1,8 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Flex, Spin, message } from "antd";
+import { Button, Card, Flex, Spin, message } from "antd";
 import { InputField } from "../../components/form/InputField";
 import { tasksNetwork } from "../../lib/networks/tasks";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { createTaskSchema } from "../../lib/models/db/task";
 
 const defaultValues = {
   name: "",
@@ -39,7 +41,12 @@ export const CreateTaskPage = () => {
   });
   const form = useForm({
     defaultValues,
+    validatorAdapter: zodValidator(),
+    validators: {
+      onChange: createTaskSchema,
+    },
     onSubmit: async ({ value }) => {
+      console.log(value);
       // messageApi.warning("Validation failed")
       createTask.mutateAsync(value);
     },
@@ -59,51 +66,53 @@ export const CreateTaskPage = () => {
       <Button htmlType="button" onClick={fillForm}>
         Fill
       </Button>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <Flex vertical gap="small">
-          <form.Field
-            name="name"
-            children={(field) => <InputField field={field} label="Name:" />}
-          />
-          <br />
-          <form.Field
-            name="interval"
-            children={(field) => (
-              <InputField field={field} type="number" label="Interval:" />
-            )}
-          />
-          <br />
-          <form.Field
-            name="description"
-            children={(field) => (
-              <InputField field={field} label="Description:" />
-            )}
-          />
-          <br />
-          <form.Field
-            mode="array"
-            name="http.url"
-            children={(field) => (
-              <InputField field={field} type="url" label="Url:" />
-            )}
-          />
-          <br />
+      <Card style={{ maxWidth: "50vw", margin: "0 auto" }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+        >
+          <Flex vertical gap="small">
+            <form.Field
+              name="name"
+              children={(field) => <InputField field={field} label="Name:" />}
+            />
+            <br />
+            <form.Field
+              name="interval"
+              children={(field) => (
+                <InputField field={field} type="number" label="Interval:" />
+              )}
+            />
+            <br />
+            <form.Field
+              name="description"
+              children={(field) => (
+                <InputField field={field} label="Description:" />
+              )}
+            />
+            <br />
+            <form.Field
+              mode="array"
+              name="http.url"
+              children={(field) => (
+                <InputField field={field} type="url" label="Url:" />
+              )}
+            />
+            <br />
 
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled={createTask.isPending}
-          >
-            {createTask.isPending ? <Spin /> : "Submit"}
-          </Button>
-        </Flex>
-      </form>
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={createTask.isPending}
+            >
+              {createTask.isPending ? <Spin /> : "Submit"}
+            </Button>
+          </Flex>
+        </form>
+      </Card>
     </>
   );
 };
