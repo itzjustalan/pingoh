@@ -31,7 +31,8 @@ export const Route = createRootRoute({
       throw redirect({
         to: "/auth/signin",
         search: {
-          redirect: location.href,
+      // NOTE: this is a temporary workaround since react router location.href is returning pathname after updating to the latest version
+          redirect: window.location.origin + location.href,
         },
       });
     }
