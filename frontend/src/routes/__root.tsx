@@ -40,8 +40,7 @@ export const Route = createRootRoute({
             >
               <Menu theme="dark" mode="inline">
                 <MenuNavItem to="/" title="Home" />
-                <MenuNavItem to="/about" title="About" />
-                <MenuNavItem to="/auth/signin" title="Signin" />
+
                 <MenuNavItem to="/tasks/new" title="Create Task" />
                 <Menu.Item key={"signout"} onClick={() => {
                   authNetwork.signout();

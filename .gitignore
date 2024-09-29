@@ -13,3 +13,6 @@ websocat.x86_64-pc-windows-gnu.exe
 
 # swap file
 .fuse_hidden*
+
+# mac stuff
+.DS_Store
