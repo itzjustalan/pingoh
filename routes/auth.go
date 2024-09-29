@@ -20,8 +20,7 @@ func addAuthChecks(api *fiber.Router) {
 		}
 		claims, err := services.ValidateToken(token)
 		if err != nil {
-			// NOTE: return unauthorized error
-			return err
+			return fiber.ErrUnauthorized
 		}
 		c.Locals("uid", claims.ID)
 		c.Locals("role", claims.Role)

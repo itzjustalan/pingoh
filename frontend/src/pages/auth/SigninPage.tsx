@@ -27,7 +27,7 @@ export const SigninPage = () => {
   return (
     <>
       <p style={{ textAlign: "center" }}><Typography.Title>Sign In</Typography.Title></p>
-      <Card style={{ maxWidth: "50vw", margin: "0 auto" }}>
+      <Card style={{ maxWidth: "30vw", margin: "0 auto" }}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
