@@ -2,18 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Button, Spin, Table, type TableProps, Tag, Typography } from "antd";
 import { useFetchParams } from "../../lib/hooks/fetch";
-import { tasksNetwork } from "../../lib/networks/tasks";
 import type { FetchType } from "../../lib/models/db/fetch";
+import { tasksNetwork } from "../../lib/networks/tasks";
 
 export const ListTasksPage = () => {
   const navigate = useNavigate({ from: "/tasks" });
   // const { limit, setLimit, count, setCount, sort, setSort, filter, setFilter } =
-  const { limit, count, sort, setSort, filter } =
-    useFetchParams({
-      r: "tasks",
-      l: 10,
-      c: 1,
-    });
+  const { limit, count, sort, setSort, filter } = useFetchParams({
+    r: "tasks",
+    l: 10,
+    c: 1,
+  });
   const tasksQuery = useQuery({
     queryKey: ["fetch", "tasks", limit, count, sort, filter],
     queryFn: () =>

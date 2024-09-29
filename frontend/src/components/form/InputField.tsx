@@ -11,7 +11,7 @@ export const InputField = ({
   field: FieldApi<any, any, any, any>;
   type?: React.HTMLInputTypeAttribute;
   label: string;
-  id?: string,
+  id?: string;
 }) => {
   return (
     <>

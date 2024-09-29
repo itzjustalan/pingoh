@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Home } from "../pages/Home";
 import { checkAuth } from "../lib/utils/authCheck";
+import { Home } from "../pages/Home";
 
 export const Route = createLazyFileRoute("/")({
   beforeLoad: checkAuth,

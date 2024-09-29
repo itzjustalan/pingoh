@@ -11,13 +11,13 @@ import { authStore } from "../lib/stores/auth";
 const TanStackRouterDevtools = env.prod
   ? () => null // Render nothing in production
   : React.lazy(() =>
-    // Lazy load in development
-    import("@tanstack/router-devtools").then((res) => ({
-      // For Embedded Mode
-      // default: res.TanStackRouterDevtoolsPanel
-      default: res.TanStackRouterDevtools,
-    })),
-  );
+      // Lazy load in development
+      import("@tanstack/router-devtools").then((res) => ({
+        // For Embedded Mode
+        // default: res.TanStackRouterDevtoolsPanel
+        default: res.TanStackRouterDevtools,
+      })),
+    );
 
 export const Route = createRootRoute({
   component: () => {
@@ -27,7 +27,7 @@ export const Route = createRootRoute({
     return (
       <>
         <Layout>
-          {user &&
+          {user && (
             <Sider
               style={{
                 overflow: "auto",
@@ -42,14 +42,18 @@ export const Route = createRootRoute({
                 <MenuNavItem to="/" title="Home" />
 
                 <MenuNavItem to="/tasks/new" title="Create Task" />
-                <Menu.Item key={"signout"} onClick={() => {
-                  authNetwork.signout();
-                  navigate({ to: "/auth/signin" })
-                }}>
+                <Menu.Item
+                  key={"signout"}
+                  onClick={() => {
+                    authNetwork.signout();
+                    navigate({ to: "/auth/signin" });
+                  }}
+                >
                   Sign Out
                 </Menu.Item>
               </Menu>
-            </Sider>}
+            </Sider>
+          )}
         </Layout>
         <Layout
           style={{

@@ -1,4 +1,4 @@
-import { HttpTask } from "./http_task";
+import type { HttpTask } from "./http_task";
 import type { Task } from "./task";
 
 export type FetchType = {

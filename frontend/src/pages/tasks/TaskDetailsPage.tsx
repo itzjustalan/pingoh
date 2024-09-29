@@ -27,35 +27,45 @@ export const TaskDetailsPage = () => {
   return (
     <>
       <Card>
-
-        <Typography.Title level={2}>
-          {taskData.tasks.name}
-        </Typography.Title>
+        <Typography.Title level={2}>{taskData.tasks.name}</Typography.Title>
         <Divider />
-        <p><Typography.Text type="secondary">{((): string => (new Date(taskData.tasks.created_at)).toLocaleString())()}</Typography.Text></p>
+        <p>
+          <Typography.Text type="secondary">
+            {((): string =>
+              new Date(taskData.tasks.created_at).toLocaleString())()}
+          </Typography.Text>
+        </p>
         <p>
           <Tag> {taskData.http_tasks.method}</Tag>
-          <Typography.Link target="_blank" href={taskData.http_tasks.url}>{taskData.http_tasks.url}</Typography.Link></p>
+          <Typography.Link target="_blank" href={taskData.http_tasks.url}>
+            {taskData.http_tasks.url}
+          </Typography.Link>
+        </p>
         <p>
-          <Typography.Text >
-            Status:
-          </Typography.Text> {" "}
+          <Typography.Text>Status:</Typography.Text>{" "}
           <Tag color={taskData.tasks.active ? "green" : "red"}>
             {taskData.tasks.active ? "Active" : "Inactive"}
           </Tag>
         </p>
 
-        <p>Accepted Status Codes: {JSON.parse(taskData.http_tasks.accepted_status_codes).map((code: string) => (
-          <Tag>{code}</Tag>
-        ))}</p>
-        <p>Interval: <Tag>{taskData.tasks.interval} s</Tag></p>
+        <p>
+          Accepted Status Codes:{" "}
+          {JSON.parse(taskData.http_tasks.accepted_status_codes).map(
+            (code: string, i: number) => (
+              <Tag key={`${i}-${code}`}>{code}</Tag>
+            ),
+          )}
+        </p>
+        <p>
+          Interval: <Tag>{taskData.tasks.interval} s</Tag>
+        </p>
 
-        <Typography.Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'more' }}>
+        <Typography.Paragraph
+          ellipsis={{ rows: 3, expandable: true, symbol: "more" }}
+        >
           {taskData.tasks.description}
         </Typography.Paragraph>
-
-
-      </Card >
+      </Card>
 
       {/* <Button onClick={taskResults.stopListening}>Stop</Button> */}
       {/* <pre>{JSON.stringify(httpResults, null, 2)}</pre> */}
@@ -65,4 +75,3 @@ export const TaskDetailsPage = () => {
     </>
   );
 };
-

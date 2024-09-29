@@ -6,6 +6,6 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [TanStackRouterVite(), react()],
   build: {
-    chunkSizeWarningLimit: 1600 // increase chunk size for build
-  }
+    chunkSizeWarningLimit: 1600, // increase chunk size for build
+  },
 });
