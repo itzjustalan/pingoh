@@ -9,13 +9,13 @@ import { env } from "../env";
 const TanStackRouterDevtools = env.prod
   ? () => null // Render nothing in production
   : React.lazy(() =>
-      // Lazy load in development
-      import("@tanstack/router-devtools").then((res) => ({
-        // For Embedded Mode
-        // default: res.TanStackRouterDevtoolsPanel
-        default: res.TanStackRouterDevtools,
-      })),
-    );
+    // Lazy load in development
+    import("@tanstack/router-devtools").then((res) => ({
+      // For Embedded Mode
+      // default: res.TanStackRouterDevtoolsPanel
+      default: res.TanStackRouterDevtools,
+    })),
+  );
 
 export const Route = createRootRoute({
   component: () => {
@@ -45,17 +45,19 @@ export const Route = createRootRoute({
             marginLeft: 200,
           }}
         >
-          {/* <Header /> */}
-          <Content>
-            <Outlet />
-          </Content>
-          {/* <Footer */}
-          {/*   style={{ */}
-          {/*     textAlign: "center", */}
-          {/*   }} */}
-          {/* > */}
-          {/*   Pingoh © 2023 */}
-          {/* </Footer> */}
+          <div style={{ backgroundColor: "white" }}>
+            {/* <Header /> */}
+            <Content>
+              <Outlet />
+            </Content>
+            {/* <Footer */}
+            {/*   style={{ */}
+            {/*     textAlign: "center", */}
+            {/*   }} */}
+            {/* > */}
+            {/*   Pingoh © 2023 */}
+            {/* </Footer> */}
+          </div>
         </Layout>
         <Suspense>
           <TanStackRouterDevtools />

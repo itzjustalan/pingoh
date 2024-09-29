@@ -4,19 +4,21 @@ import Input from "antd/es/input/Input";
 export const InputField = ({
   field,
   label,
+  id,
   type = "text",
 }: {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   field: FieldApi<any, any, any, any>;
   type?: React.HTMLInputTypeAttribute;
   label: string;
+  id?: string,
 }) => {
   return (
     <>
       <label htmlFor={field.name}>{label}</label>
       <Input
         type={type}
-        id={field.name}
+        id={id ?? field.name}
         name={field.name}
         value={field.state.value}
         onBlur={field.handleBlur}
