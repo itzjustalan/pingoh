@@ -17,15 +17,11 @@ export const Home: React.FC = () => {
 
       <Flex wrap justify="center" align="center" gap="middle">
         <Button type="primary">
-          <Link to={"/tasks"}>
-            Go to my tasks
-          </Link>
+          <Link to={"/tasks"}>Go to my tasks</Link>
         </Button>
         or
         <Button type="primary">
-          <Link to={"/tasks/new"}>
-            Create a new Task
-          </Link>
+          <Link to={"/tasks/new"}>Create a new Task</Link>
         </Button>
       </Flex>
       <img

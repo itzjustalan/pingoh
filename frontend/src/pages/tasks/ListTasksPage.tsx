@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Spin, Table, type TableProps, Tag, Typography, Flex } from "antd";
+import { Spin, Table, type TableProps, Tag, Typography } from "antd";
+import { Favicon } from "../../components/favicon";
 import { useFetchParams } from "../../lib/hooks/fetch";
 import type { FetchType } from "../../lib/models/db/fetch";
 import { tasksNetwork } from "../../lib/networks/tasks";
-import { Favicon } from "../../components/favicon";
 
 export const ListTasksPage = () => {
   const navigate = useNavigate({ from: "/tasks" });

@@ -10,8 +10,8 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { tasksNetwork } from "../../lib/networks/tasks";
 import { Favicon } from "../../components/favicon";
+import { tasksNetwork } from "../../lib/networks/tasks";
 
 const route = getRouteApi("/tasks/$taskId");
 export const TaskDetailsPage = () => {
