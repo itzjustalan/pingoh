@@ -1,5 +1,5 @@
 import { Outlet, createRootRoute, useNavigate } from "@tanstack/react-router";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Typography } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Content } from "antd/es/layout/layout";
 import React, { Suspense } from "react";
@@ -39,8 +39,17 @@ export const Route = createRootRoute({
               }}
             >
               <Menu theme="dark" mode="inline">
+                <Typography.Title
+                  style={{
+                    color: "white",
+                    textAlign: "center",
+                  }}
+                >
+                  Pingoh
+                </Typography.Title>
                 <MenuNavItem to="/" title="Home" />
 
+                <MenuNavItem to="/tasks" title="Tasks" />
                 <MenuNavItem to="/tasks/new" title="Create Task" />
                 <Menu.Item
                   key={"signout"}
