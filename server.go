@@ -21,7 +21,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-//go:embed all:frontend/dist
+// old way -> go:embed all:frontend/dist
+
+//go:embed frontend/dist/*
 var dashboard embed.FS
 
 var (
@@ -49,10 +51,10 @@ func main() {
 	routes.AddRoutes(app)
 
 	app.Use("/", filesystem.New(filesystem.Config{
-		// Root:       http.FS(frontend.BuildDir),
-		Root:       http.FS(dashboard),
-		PathPrefix: "frontend/dist",
-		Browse:     true,
+		Root:         http.FS(dashboard),
+		NotFoundFile: "frontend/dist/index.html",
+		PathPrefix:   "frontend/dist",
+		Browse:       true,
 	}))
 
 	app.Listen(PINGOH_PORT)
