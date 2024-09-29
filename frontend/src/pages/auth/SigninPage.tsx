@@ -4,6 +4,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { authNetwork } from "../../lib/networks/auth";
 import { Button, Card, Flex, Spin, Typography } from "antd";
 import { InputField } from "../../components/form/InputField";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { signinInputSchema } from "../../lib/models/inputs/auth";
 
 export const SigninPage = () => {
 
@@ -37,33 +39,35 @@ export const SigninPage = () => {
 
             <form.Field
               name="email"
-              // validatorAdapter={zodValidator}
-              // validators={{
-              //   onBlur: signinInputSchema.shape.email,
-              // }}
+              validatorAdapter={zodValidator()}
+              validators={{
+                onChange: signinInputSchema.shape.email,
+              }}
               children={(field) => <InputField field={field} label="Username:" />}
             />
             <form.Field
               name="passw"
-              // validatorAdapter={zodValidator}
-              // validators={{
-              //   onBlur: signinInputSchema.shape.passw,
-              // }}
+              validatorAdapter={zodValidator()}
+              validators={{
+                onChange: signinInputSchema.shape.passw,
+              }}
               children={(field) => <InputField field={field} label="Password:" type="password" />}
             />
-            {/* <form.Subscribe */}
-            {/*   selector={(state) => state.errors} */}
-            {/*   children={(errors) => errors.length > 0 && errors.toString()} */}
-            {/* /> */}
 
             <br />
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={signin.isPending}
-            >
-              {signin.isPending ? <Spin /> : "Submit"}
-            </Button>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit, isSubmitting]) => (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  disabled={signin.isPending || !canSubmit}
+                >
+                  {(signin.isPending || isSubmitting) ? <Spin /> : "Submit"}
+                </Button>
+              )}
+            />
+
           </Flex>
         </form>
       </Card>
