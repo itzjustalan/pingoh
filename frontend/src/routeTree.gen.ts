@@ -106,14 +106,83 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  IndexLazyRoute,
-  AboutLazyRoute,
-  AuthSigninRoute,
-  TasksTaskIdLazyRoute,
-  TasksNewLazyRoute,
-  TasksIndexLazyRoute,
-})
+export interface FileRoutesByFullPath {
+  '/': typeof IndexLazyRoute
+  '/about': typeof AboutLazyRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/tasks/$taskId': typeof TasksTaskIdLazyRoute
+  '/tasks/new': typeof TasksNewLazyRoute
+  '/tasks': typeof TasksIndexLazyRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexLazyRoute
+  '/about': typeof AboutLazyRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/tasks/$taskId': typeof TasksTaskIdLazyRoute
+  '/tasks/new': typeof TasksNewLazyRoute
+  '/tasks': typeof TasksIndexLazyRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/': typeof IndexLazyRoute
+  '/about': typeof AboutLazyRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/tasks/$taskId': typeof TasksTaskIdLazyRoute
+  '/tasks/new': typeof TasksNewLazyRoute
+  '/tasks/': typeof TasksIndexLazyRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/auth/signin'
+    | '/tasks/$taskId'
+    | '/tasks/new'
+    | '/tasks'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/about'
+    | '/auth/signin'
+    | '/tasks/$taskId'
+    | '/tasks/new'
+    | '/tasks'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/auth/signin'
+    | '/tasks/$taskId'
+    | '/tasks/new'
+    | '/tasks/'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  IndexLazyRoute: typeof IndexLazyRoute
+  AboutLazyRoute: typeof AboutLazyRoute
+  AuthSigninRoute: typeof AuthSigninRoute
+  TasksTaskIdLazyRoute: typeof TasksTaskIdLazyRoute
+  TasksNewLazyRoute: typeof TasksNewLazyRoute
+  TasksIndexLazyRoute: typeof TasksIndexLazyRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexLazyRoute: IndexLazyRoute,
+  AboutLazyRoute: AboutLazyRoute,
+  AuthSigninRoute: AuthSigninRoute,
+  TasksTaskIdLazyRoute: TasksTaskIdLazyRoute,
+  TasksNewLazyRoute: TasksNewLazyRoute,
+  TasksIndexLazyRoute: TasksIndexLazyRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 

@@ -1,4 +1,9 @@
-import { Outlet, createRootRoute, useNavigate } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRootRoute,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Layout, Menu, Typography } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Content } from "antd/es/layout/layout";
@@ -20,6 +25,17 @@ const TanStackRouterDevtools = env.prod
     );
 
 export const Route = createRootRoute({
+  beforeLoad: ({ location }) => {
+    if (location.pathname.startsWith("/auth/sign")) return;
+    if (authStore.getState().user === undefined) {
+      throw redirect({
+        to: "/auth/signin",
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
+  },
   component: () => {
     const navigate = useNavigate({ from: "/" });
     const { user } = authStore();
