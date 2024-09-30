@@ -7,7 +7,7 @@ type HttpResult struct {
 	TaskID    int           `json:"task_id" db:"task_id"`
 	Code      int           `json:"code"`
 	Ok        bool          `json:"ok"`
-	Duration  time.Duration `json:"duration" db:"duration_ns"`
+	Duration  time.Duration `json:"duration_ns" db:"duration_ns"`
 	CreatedAt time.Time     `json:"created_at" db:"created_at"`
 }
 

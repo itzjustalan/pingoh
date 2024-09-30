@@ -12,6 +12,7 @@ import {
 } from "antd";
 import { Favicon } from "../../components/favicon";
 import { tasksNetwork } from "../../lib/networks/tasks";
+import { TaskResultsPage } from "./TaskResultsPage";
 
 const route = getRouteApi("/tasks/$taskId");
 export const TaskDetailsPage = () => {
@@ -39,7 +40,7 @@ export const TaskDetailsPage = () => {
 
   const deleteTask = useMutation({
     mutationKey: ["task", taskId, "delete"],
-    mutationFn: tasksNetwork.delete,
+    mutationFn: tasksNetwork.drop,
     onSuccess: () => {
       navigate({
         to: "/tasks",
@@ -121,6 +122,10 @@ export const TaskDetailsPage = () => {
         >
           {taskData.tasks.description}
         </Typography.Paragraph>
+        <Divider />
+        <TaskResultsPage taskId={taskId} />
+        <br />
+        <Typography.Text>Latest 10 Task Statuses</Typography.Text>
       </Card>
 
       {/* <Button onClick={taskResults.stopListening}>Stop</Button> */}

@@ -46,7 +46,6 @@ export const CreateTaskPage = () => {
       onChange: createTaskSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
       // messageApi.warning("Validation failed")
       createTask.mutateAsync(value);
     },
