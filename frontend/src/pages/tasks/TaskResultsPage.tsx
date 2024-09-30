@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { tasksNetwork } from "../../lib/networks/tasks";
 import { Spin, Typography } from "antd";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { useMemo } from "react";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import type { ContentType } from "recharts/types/component/Tooltip";
+import { tasksNetwork } from "../../lib/networks/tasks";
 
 const customTooltip: ContentType<string, string> = ({ active, payload }) => {
   if (active && payload && payload.length) {
