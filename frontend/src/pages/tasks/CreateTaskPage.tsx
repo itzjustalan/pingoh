@@ -5,6 +5,8 @@ import { Button, Card, Divider, Flex, Spin, Typography, message } from "antd";
 import { InputField } from "../../components/form/InputField";
 import { createTaskSchema } from "../../lib/models/db/task";
 import { tasksNetwork } from "../../lib/networks/tasks";
+import Lottie from 'react-lottie-player';
+import bubble from "../../assets/bubble.json"
 
 const defaultValues = {
   name: "",
@@ -62,7 +64,16 @@ export const CreateTaskPage = () => {
       {/* <Button htmlType="button" onClick={fillForm}> */}
       {/*   Fill */}
       {/* </Button> */}
-      <Card style={{ maxWidth: "50vw", margin: "0 auto" }}>
+      <div style={{ position: "absolute" }}>
+        <Lottie
+          loop
+          animationData={bubble}
+          play
+          style={{ width: "100vw", height: "100vh", zIndex: 0, position: "relative", left: "-10vw", transform: "rotate(90deg)" }}
+        />
+      </div>
+
+      <Card style={{ maxWidth: "40vw", margin: "0 auto" }}>
         <form
           onSubmit={(e) => {
             e.preventDefault();

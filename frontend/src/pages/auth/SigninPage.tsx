@@ -6,7 +6,9 @@ import { Button, Card, Flex, Spin, Typography } from "antd";
 import { InputField } from "../../components/form/InputField";
 import { signinInputSchema } from "../../lib/models/inputs/auth";
 import { authNetwork } from "../../lib/networks/auth";
+import Lottie from 'react-lottie-player';
 
+import lottie from "../../assets/Animation - 1727673195076.json";
 export const SigninPage = () => {
   const navigate = useNavigate({ from: "/auth/signin" });
   const signin = useMutation({
@@ -32,7 +34,16 @@ export const SigninPage = () => {
   });
   return (
     <>
-      <p style={{ textAlign: "center" }}>
+      <div style={{ position: "absolute" }}>
+
+        <Lottie
+          loop
+          animationData={lottie}
+          play
+          style={{ width: "100vw", height: "100vh", zIndex: 0, position: "relative" }}
+        />
+      </div>
+      <p style={{ textAlign: "center", paddingTop: "10%" }}>
         <Typography.Title>Sign In</Typography.Title>
       </p>
       <Card style={{ maxWidth: "30vw", margin: "0 auto" }}>
@@ -81,6 +92,7 @@ export const SigninPage = () => {
           </Flex>
         </form>
       </Card>
+
     </>
   );
 };

@@ -22,7 +22,7 @@ const customTooltip: ContentType<string, string> = ({ active, payload }) => {
               key={`tooltip-item-${
                 // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                 index
-              }`}
+                }`}
             >
               <Typography.Text
                 style={{
@@ -100,6 +100,8 @@ export const TaskResultsPage = ({ taskId }: { taskId: string }) => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      <br />
+      {chartData?.length && <Typography.Text>Latest {chartData.length} Task Statuses</Typography.Text>}
     </>
   );
 };

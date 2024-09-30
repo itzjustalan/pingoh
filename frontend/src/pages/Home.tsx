@@ -11,7 +11,7 @@ export const Home: React.FC = () => {
 
       <p style={{ textAlign: "center" }}>
         <Typography.Text>
-          A self contained uptime monitoring tool for homelabs
+          A self contained uptime monitoring tool for homelabs.
         </Typography.Text>
       </p>
 

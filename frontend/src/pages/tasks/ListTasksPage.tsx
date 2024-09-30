@@ -5,7 +5,7 @@ import { Favicon } from "../../components/favicon";
 import { useFetchParams } from "../../lib/hooks/fetch";
 import type { FetchType } from "../../lib/models/db/fetch";
 import { tasksNetwork } from "../../lib/networks/tasks";
-
+import task from "../../assets/task.svg"
 export const ListTasksPage = () => {
   const navigate = useNavigate({ from: "/tasks" });
   // const { limit, setLimit, count, setCount, sort, setSort, filter, setFilter } =
@@ -71,10 +71,22 @@ export const ListTasksPage = () => {
   ];
 
   const nodata = () => (
-    <Typography.Text type="secondary">
-      You have not created any tasks yet. <br />
-      <Link to="/tasks/new">Create a new task</Link>
-    </Typography.Text>
+
+    <div>
+      <div >
+
+        <img src={task} alt="task" width={"50%"} height={"50%"} style={{ margin: "0 auto", display: "block" }} />
+      </div>
+      <br />
+      <p style={{ textAlign: "center" }}>
+        <Typography.Text type="secondary">
+          You have not created any tasks yet. <br />
+          <Link to="/tasks/new">Create a new task</Link>
+        </Typography.Text>
+      </p>
+
+
+    </div>
   );
 
   const table = () => (

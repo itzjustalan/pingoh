@@ -74,7 +74,7 @@ export const TaskDetailsPage = () => {
             </Button>{" "}
             <Popconfirm
               title="Delete the task"
-              description="Are you sure you want to delete this task?"
+              description="Are you sure you want to delete this task? This will also remove all task results."
               onConfirm={async () =>
                 await deleteTask.mutateAsync(taskData.tasks.id)
               }
@@ -124,8 +124,6 @@ export const TaskDetailsPage = () => {
         </Typography.Paragraph>
         <Divider />
         <TaskResultsPage taskId={taskId} />
-        <br />
-        <Typography.Text>Latest 10 Task Statuses</Typography.Text>
       </Card>
 
       {/* <Button onClick={taskResults.stopListening}>Stop</Button> */}
