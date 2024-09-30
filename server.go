@@ -27,9 +27,11 @@ import (
 var dashboard embed.FS
 
 var (
-	PINGOH_PORT     = ":3000"
-	PINGOH_DB_FILE  = "pingoh.db"
-	PINGOH_LOG_FILE = "pingoh.log"
+	PINGOH_PORT           = ":3000"
+	PINGOH_DB_FILE        = "pingoh.db"
+	PINGOH_LOG_FILE       = "pingoh.log"
+	PINGOH_ADMIN_EMAIL    = "admin@mail.com"
+	PINGOH_ADMIN_PASSWORD = "password"
 )
 
 func main() {
@@ -37,6 +39,11 @@ func main() {
 	setLogger(&PINGOH_LOG_FILE)
 	db.ConnectDB(&PINGOH_DB_FILE)
 	go listenAndStop()
+	controllers.Signup(&controllers.SignupCredentials{
+		Name:  "Admin",
+		Email: PINGOH_ADMIN_EMAIL,
+		Passw: PINGOH_ADMIN_PASSWORD,
+	})
 	controllers.StartTasks()
 	app := fiber.New(fiber.Config{
 		ServerHeader:             "Pingoh",
@@ -83,12 +90,20 @@ func loadEnvs() {
 	if v := os.Getenv("PINGOH_LOG_FILE"); v != "" {
 		PINGOH_LOG_FILE = v
 	}
+	if v := os.Getenv("PINGOH_ADMIN_EMAIL"); v != "" {
+		PINGOH_ADMIN_EMAIL = v
+	}
+	if v := os.Getenv("PINGOH_ADMIN_PASSWORD"); v != "" {
+		PINGOH_ADMIN_PASSWORD = v
+	}
 
 	// maybe in the future recieve a number and create the port string in run time with fmt.Sprintf(":%d", port)
 	// and also check if the port is free or something something like that that lol
 	flag.StringVar(&PINGOH_PORT, "port", PINGOH_PORT, "port number in :3000 format")
 	flag.StringVar(&PINGOH_DB_FILE, "db", PINGOH_DB_FILE, "db file path")
 	flag.StringVar(&PINGOH_LOG_FILE, "log", PINGOH_LOG_FILE, "log file path")
+	flag.StringVar(&PINGOH_ADMIN_EMAIL, "email", PINGOH_ADMIN_EMAIL, "admin user email")
+	flag.StringVar(&PINGOH_ADMIN_PASSWORD, "password", PINGOH_ADMIN_PASSWORD, "admin user password")
 	flag.Parse()
 }
 
