@@ -25,7 +25,7 @@ export const InputField = ({
         onChange={(e) => field.handleChange(e.target.value)}
       />
       {field.state.meta.isTouched && field.state.meta.errors.length ? (
-        <em>{field.state.meta.errors.join(", ")}</em>
+        <em style={{ color: "red" }}>{field.state.meta.errors.join(", ")}</em>
       ) : null}
       {field.state.meta.isValidating ? "Validating..." : null}
     </>

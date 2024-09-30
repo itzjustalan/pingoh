@@ -41,10 +41,6 @@ export const CreateTaskPage = () => {
   });
   const form = useForm({
     defaultValues,
-    validatorAdapter: zodValidator(),
-    validators: {
-      onChange: createTaskSchema,
-    },
     onSubmit: async ({ value }) => {
       // messageApi.warning("Validation failed")
       createTask.mutateAsync(value);
@@ -97,19 +93,27 @@ export const CreateTaskPage = () => {
             <form.Field
               mode="array"
               name="http.url"
+              validatorAdapter={zodValidator()}
+              validators={{
+                onChange: createTaskSchema.shape.http.shape.url,
+              }}
               children={(field) => (
                 <InputField field={field} type="url" label="Url:" />
               )}
             />
             <br />
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              disabled={createTask.isPending}
-            >
-              {createTask.isPending ? <Spin /> : "Submit"}
-            </Button>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit, isSubmitting]) => (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  disabled={createTask.isPending || !canSubmit}
+                >
+                  {createTask.isPending || isSubmitting ? <Spin /> : "Submit"}
+                </Button>
+              )}
+            />
           </Flex>
         </form>
       </Card>
