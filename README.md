@@ -19,6 +19,27 @@ cd ../
 go build
 ```
 
+# docker
+```bash
+docker build -t pingoh .
+docker run pingoh
+# port forwarding where 4001 is the host port and 4002 is the container port
+docker run -p 4001:4002 pingoh --port :4002 # other pingoh flags
+```
+
+# usage
+pingoh --help
+  --db string
+        db file path (default "pingoh.db")
+  --email string
+        admin user email (default "admin@mail.com")
+  --log string
+        log file path (default "pingoh.log")
+  --password string
+        admin user password (default "password")
+  --port string
+        port number in :3000 format (default ":3000")
+
 # for development
 Install [nodemon](https://nodemon.io) with `npm install -g nodemon` and run `nodemon` in the root directory.
 Nodemon should pick up the ./nodemon.json configuration file and run the app with the correct configuration.
