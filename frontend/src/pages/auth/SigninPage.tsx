@@ -8,7 +8,7 @@ import { signinInputSchema } from "../../lib/models/inputs/auth";
 import { authNetwork } from "../../lib/networks/auth";
 import Lottie from 'react-lottie-player';
 
-import lottie from "../../assets/Animation - 1727673195076.json";
+import lottie from "../../assets/matrix.json";
 export const SigninPage = () => {
   const navigate = useNavigate({ from: "/auth/signin" });
   const signin = useMutation({
